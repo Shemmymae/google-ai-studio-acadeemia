@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -347,6 +344,25 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         },
         { name: 'Award', path: '/award' },
     ]},
+    { name: 'Academic', icon: icons.courses, children: [
+        {
+            name: 'Class & Section',
+            children: [
+                { name: 'Control Classes', path: '/academic/control-classes' },
+                { name: 'Assign Class Teacher', path: '/academic/assign-class-teacher' },
+            ]
+        },
+        {
+            name: 'Subject',
+            children: [
+                { name: 'Subject', path: '/academic/subject' },
+                { name: 'Class Assign', path: '/academic/class-assign' },
+            ]
+        },
+        { name: 'Class Schedule', path: '/academic/class-schedule' },
+        { name: 'Teacher Schedule', path: '/academic/teacher-schedule' },
+        { name: 'Promotion', path: '/academic/promotion' },
+    ]},
     { name: 'Card Manager', icon: icons.subscription, children: [
         { name: 'ID Card Template', path: '/card-management/id-card-template' },
         { name: 'Student ID Card', path: '/card-management/student-id-card' },
@@ -359,20 +375,174 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Generate Student', path: '/certificate/generate-student' },
         { name: 'Generate Employee', path: '/certificate/generate-employee' },
     ]},
-    { name: 'Live Class Rooms', icon: icons.integrations, path: '/dashboard' },
-    { name: 'Attachments Book', icon: icons.admission, path: '/dashboard' },
-    { name: 'Homework', icon: icons.courses, path: '/dashboard' },
-    { name: 'Exam Master', icon: icons.attendance, path: '/dashboard' },
-    { name: 'Online Exam', icon: icons.attendance, path: '/dashboard' },
-    { name: 'Supervision', icon: icons.security, path: '/dashboard' },
-    { name: 'Attendance', icon: icons.attendance, path: '/attendance' },
-    { name: 'Qr Code Attendance', icon: icons.dashboard, path: '/dashboard' },
-    { name: 'Library', icon: icons.courses, path: '/dashboard' },
-    { name: 'Events', icon: icons.crm, path: '/dashboard' },
-    { name: 'Bulk Sms And Email', icon: icons.forms, path: '/dashboard' },
-    { name: 'Student Accounting', icon: icons.accounting, path: '/dashboard' },
+    { name: 'Live Class Rooms', icon: icons.integrations, children: [
+        { name: 'Live Class', path: '/live-class/main' },
+        { name: 'Live Class Reports', path: '/live-class/reports' },
+    ]},
+    { name: 'Attachments Book', icon: icons.admission, children: [
+        { name: 'Upload Content', path: '/attachments/upload' },
+        { name: 'Attachment Type', path: '/attachments/type' },
+    ]},
+    { name: 'Homework', icon: icons.courses, children: [
+        { name: 'Homework', path: '/homework/main' },
+        { name: 'Evaluation Report', path: '/homework/evaluation-report' },
+    ]},
+    { name: 'Exam Master', icon: icons.attendance, children: [
+        { name: 'Exam', path: '/exam-master/exam' },
+        { name: 'Exam Schedule', path: '/exam-master/exam-schedule' },
+        { name: 'Marks', path: '/exam-master/marks' },
+    ]},
+    { name: 'Online Exam', icon: icons.attendance, children: [
+        { name: 'Online Exam', path: '/online-exam/main' },
+        { name: 'Question Bank', path: '/online-exam/question-bank' },
+        { name: 'Question Group', path: '/online-exam/question-group' },
+        { name: 'Position Generate', path: '/online-exam/position-generate' },
+        { name: 'Exam Result', path: '/online-exam/exam-result' },
+    ]},
+    { name: 'Supervision', icon: icons.security, children: [
+        { name: 'Hostel', path: '/supervision/hostel' },
+        { name: 'Transport', path: '/supervision/transport' },
+    ]},
+    { name: 'Attendance', icon: icons.attendance, children: [
+        { name: 'Student', path: '/attendance/student' },
+        { name: 'Subject Wise', path: '/attendance/subject-wise' },
+        { name: 'Employee', path: '/attendance/employee' },
+        { name: 'Exam', path: '/attendance/exam' },
+    ]},
+    { name: 'Qr Code Attendance', icon: icons.dashboard, children: [
+        { name: 'Attendance', path: '/qr-code-attendance/attendance' },
+        { name: 'Settings', path: '/qr-code-attendance/settings' },
+        { 
+            name: 'Reports',
+            children: [
+                { name: 'Student Reports By Date', path: '/qr-code-attendance/reports/student' },
+                { name: 'Employee Reports By Date', path: '/qr-code-attendance/reports/employee' },
+            ]
+        },
+    ]},
+    { name: 'Library', icon: icons.courses, children: [
+        { name: 'Books', path: '/library/books' },
+        { name: 'Books Category', path: '/library/books-category' },
+        { name: 'My Issued Book', path: '/library/my-issued-book' },
+        { name: 'Book Issue/return', path: '/library/book-issue-return' },
+    ]},
+    { name: 'Events', icon: icons.crm, children: [
+        { name: 'Event Type', path: '/events/type' },
+        { name: 'Events', path: '/events/main' },
+    ]},
+    { name: 'Bulk Sms And Email', icon: icons.forms, children: [
+        { name: 'Send Sms / Email', path: '/bulk-sms-email/send' },
+        { name: 'Sms / Email Report', path: '/bulk-sms-email/report' },
+        { name: 'Sms Template', path: '/bulk-sms-email/sms-template' },
+        { name: 'Email Template', path: '/bulk-sms-email/email-template' },
+        { name: 'Student Birthday Wishes', path: '/bulk-sms-email/student-birthday' },
+        { name: 'Staff Birthday Wishes', path: '/bulk-sms-email/staff-birthday' },
+    ]},
+    { 
+        name: 'Student Accounting', 
+        icon: icons.accounting, 
+        children: [
+            { 
+                name: 'Offline Payments',
+                children: [
+                    { name: 'Payments Type', path: '/student-accounting/offline-payments/type' },
+                    { name: 'Offline Payments', path: '/student-accounting/offline-payments/main' },
+                ]
+            },
+            { name: 'Fees Type', path: '/student-accounting/fees-type' },
+            { name: 'Fees Group', path: '/student-accounting/fees-group' },
+            { name: 'Fine Setup', path: '/student-accounting/fine-setup' },
+            { name: 'Fees Allocation', path: '/student-accounting/fees-allocation' },
+            { name: 'Fees Pay / Invoice', path: '/student-accounting/pay-invoice' },
+            { name: 'Due Fees Invoice', path: '/student-accounting/due-invoice' },
+            { name: 'Fees Reminder', path: '/student-accounting/fees-reminder' },
+        ]
+    },
+    { 
+        name: 'Office Accounting', 
+        icon: icons.accounting, 
+        children: [
+            { name: 'Account', path: '/office-accounting/account' },
+            { name: 'New Deposit', path: '/office-accounting/new-deposit' },
+            { name: 'New Expense', path: '/office-accounting/new-expense' },
+            { name: 'All Transactions', path: '/office-accounting/all-transactions' },
+            { name: 'Voucher Head', path: '/office-accounting/voucher-head' },
+        ]
+    },
     { name: 'Message', icon: icons.crm, path: '/dashboard' },
-    { name: 'Reports', icon: icons.accounting, path: '/dashboard' },
+    { 
+        name: 'Reports', 
+        icon: icons.accounting, 
+        children: [
+            {
+                name: 'Student Reports',
+                children: [
+                    { name: 'Student Reports', path: '/reports/student-reports/student' },
+                    { name: 'Login Credential', path: '/reports/student-reports/login-credential' },
+                    { name: 'Admission Report', path: '/reports/student-reports/admission' },
+                    { name: 'Class & Section Report', path: '/reports/student-reports/class-section' },
+                    { name: 'Sibling Report', path: '/reports/student-reports/sibling' },
+                ]
+            },
+            {
+                name: 'Fees Reports',
+                children: [
+                    { name: 'Fees Report', path: '/reports/fees-reports/fees' },
+                    { name: 'Receipts Report', path: '/reports/fees-reports/receipts' },
+                    { name: 'Due Fees Report', path: '/reports/fees-reports/due-fees' },
+                    { name: 'Fine Report', path: '/reports/fees-reports/fine' },
+                ]
+            },
+            {
+                name: 'Financial Reports',
+                children: [
+                    { name: 'Account Statement', path: '/reports/financial-reports/account-statement' },
+                    { name: 'Income Reports', path: '/reports/financial-reports/income' },
+                    { name: 'Expense Reports', path: '/reports/financial-reports/expense' },
+                    { name: 'Transactions Reports', path: '/reports/financial-reports/transactions' },
+                    { name: 'Balance Sheet', path: '/reports/financial-reports/balance-sheet' },
+                    { name: 'Income Vs Expense', path: '/reports/financial-reports/income-vs-expense' },
+                ]
+            },
+            {
+                name: 'Attendance Reports',
+                children: [
+                    { name: 'Student Reports', path: '/reports/attendance-reports/student' },
+                    { name: 'Student Daily Reports', path: '/reports/attendance-reports/student-daily' },
+                    { name: 'Student Overview Reports', path: '/reports/attendance-reports/student-overview' },
+                    { name: 'Subject Wise Reports', path: '/reports/attendance-reports/subject-wise' },
+                    { name: 'Subject Wise By Day', path: '/reports/attendance-reports/subject-wise-day' },
+                    { name: 'Subject Wise By Month', path: '/reports/attendance-reports/subject-wise-month' },
+                    { name: 'Employee Reports', path: '/reports/attendance-reports/employee' },
+                    { name: 'Exam Reports', path: '/reports/attendance-reports/exam' },
+                ]
+            },
+            {
+                name: 'Human Resource',
+                children: [
+                    { name: 'Payroll Summary', path: '/reports/hr-reports/payroll-summary' },
+                    { name: 'Leave Reports', path: '/reports/hr-reports/leave' },
+                ]
+            },
+            {
+                name: 'Examination',
+                children: [
+                    { name: 'Report Card', path: '/reports/examination-reports/report-card' },
+                    { name: 'Tabulation Sheet', path: '/reports/examination-reports/tabulation-sheet' },
+                    { name: 'Progress Reports', path: '/reports/examination-reports/progress' },
+                ]
+            },
+            {
+                name: 'Inventory',
+                children: [
+                    { name: 'Stock Report', path: '/reports/inventory-reports/stock' },
+                    { name: 'Purchase Report', path: '/reports/inventory-reports/purchase' },
+                    { name: 'Sales Report', path: '/reports/inventory-reports/sales' },
+                    { name: 'Issues Report', path: '/reports/inventory-reports/issues' },
+                ]
+            },
+        ]
+    },
     { name: 'Alumni', icon: icons.hrm, children: [{ name: 'Manage Alumni', path: '/alumni/manage'}, { name: 'Events', path: '/alumni/events' }] },
     { name: 'Addon Manager', icon: icons.addon, path: '/addon-manager' },
     { name: 'Settings', icon: icons.settings, children: [

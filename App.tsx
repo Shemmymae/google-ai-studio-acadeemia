@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useContext, createContext, PropsWithChildren, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
@@ -19,7 +16,6 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import StudentsPage from './pages/StudentsPage';
 import StudentProfilePage from './pages/StudentProfilePage';
-import AttendancePage from './pages/AttendancePage';
 import SettingsPage from './pages/SettingsPage';
 import CRMPage from './pages/CRMPage';
 import IntegrationsPage from './pages/IntegrationsPage';
@@ -158,6 +154,34 @@ import CertificateTemplatePage from './pages/certificate/CertificateTemplatePage
 import GenerateStudentCertificatePage from './pages/certificate/GenerateStudentCertificatePage';
 import GenerateEmployeeCertificatePage from './pages/certificate/GenerateEmployeeCertificatePage';
 
+// Live Class Pages
+import LiveClassPage from './pages/live-class/LiveClassPage';
+import LiveClassReportsPage from './pages/live-class/LiveClassReportsPage';
+
+// Attachment Pages
+import UploadContentPage from './pages/attachments/UploadContentPage';
+import AttachmentTypePage from './pages/attachments/AttachmentTypePage';
+
+// Homework Pages
+import HomeworkPage from './pages/homework/HomeworkPage';
+import EvaluationReportPage from './pages/homework/EvaluationReportPage';
+
+// Exam Master Pages
+import ExamPage from './pages/exam-master/ExamPage';
+import ExamSchedulePage from './pages/exam-master/ExamSchedulePage';
+import MarksPage from './pages/exam-master/MarksPage';
+
+// Online Exam Pages
+import OnlineExamPage from './pages/online-exam/OnlineExamPage';
+import QuestionBankPage from './pages/online-exam/QuestionBankPage';
+import QuestionGroupPage from './pages/online-exam/QuestionGroupPage';
+import PositionGeneratePage from './pages/online-exam/PositionGeneratePage';
+import ExamResultPage from './pages/online-exam/ExamResultPage';
+
+// Supervision Pages
+import HostelSupervisionPage from './pages/supervision/HostelPage';
+import TransportSupervisionPage from './pages/supervision/TransportPage';
+
 // Payroll Pages
 import SalaryTemplatePage from './pages/payroll/SalaryTemplatePage';
 import SalaryAssignPage from './pages/payroll/SalaryAssignPage';
@@ -176,6 +200,97 @@ import LeaveManagePage from './pages/leave/ManagePage';
 
 // Award Pages
 import AwardPage from './pages/award/AwardPage';
+
+// Attendance Pages
+import StudentAttendancePage from './pages/attendance/StudentAttendancePage';
+import SubjectWiseAttendancePage from './pages/attendance/SubjectWiseAttendancePage';
+import EmployeeAttendancePage from './pages/attendance/EmployeeAttendancePage';
+import ExamAttendancePage from './pages/attendance/ExamAttendancePage';
+
+// QR Code Attendance Pages
+import QrCodeAttendancePage from './pages/qr-code-attendance/AttendancePage';
+import QrCodeSettingsPage from './pages/qr-code-attendance/SettingsPage';
+import QrCodeStudentReportsPage from './pages/qr-code-attendance/reports/StudentReportsByDatePage';
+import QrCodeEmployeeReportsPage from './pages/qr-code-attendance/reports/EmployeeReportsByDatePage';
+
+// Library Pages
+import BooksPage from './pages/library/BooksPage';
+import BooksCategoryPage from './pages/library/BooksCategoryPage';
+import MyIssuedBookPage from './pages/library/MyIssuedBookPage';
+import BookIssueReturnPage from './pages/library/BookIssueReturnPage';
+
+// Events Pages
+import EventTypePage from './pages/events/EventTypePage';
+import EventsPage from './pages/events/EventsPage';
+
+// Bulk SMS and Email Pages
+import SendSmsEmailPage from './pages/bulk-sms-email/SendSmsEmailPage';
+import SmsEmailReportPage from './pages/bulk-sms-email/SmsEmailReportPage';
+import SmsTemplatePage from './pages/bulk-sms-email/SmsTemplatePage';
+import EmailTemplatePage from './pages/bulk-sms-email/EmailTemplatePage';
+import StudentBirthdayWishesPage from './pages/bulk-sms-email/StudentBirthdayWishesPage';
+import StaffBirthdayWishesPage from './pages/bulk-sms-email/StaffBirthdayWishesPage';
+
+// Student Accounting Pages
+import PaymentsTypePage from './pages/student-accounting/offline-payments/PaymentsTypePage';
+import OfflinePaymentsAccPage from './pages/student-accounting/offline-payments/OfflinePaymentsPage';
+import FeesTypePage from './pages/student-accounting/FeesTypePage';
+import FeesGroupPage from './pages/student-accounting/FeesGroupPage';
+import FineSetupPage from './pages/student-accounting/FineSetupPage';
+import FeesAllocationPage from './pages/student-accounting/FeesAllocationPage';
+import FeesPayInvoicePage from './pages/student-accounting/FeesPayInvoicePage';
+import DueFeesInvoicePage from './pages/student-accounting/DueFeesInvoicePage';
+import FeesReminderPage from './pages/student-accounting/FeesReminderPage';
+
+// Office Accounting Pages
+import AccountPageOA from './pages/office-accounting/AccountPage';
+import NewDepositPage from './pages/office-accounting/NewDepositPage';
+import NewExpensePage from './pages/office-accounting/NewExpensePage';
+import AllTransactionsPage from './pages/office-accounting/AllTransactionsPage';
+import VoucherHeadPage from './pages/office-accounting/VoucherHeadPage';
+
+// Reports Pages
+import StudentReportsMainPage from './pages/reports/student-reports/StudentReportsPage';
+import LoginCredentialPage from './pages/reports/student-reports/LoginCredentialPage';
+import AdmissionReportPage from './pages/reports/student-reports/AdmissionReportPage';
+import ClassSectionReportPage from './pages/reports/student-reports/ClassSectionReportPage';
+import SiblingReportPage from './pages/reports/student-reports/SiblingReportPage';
+import FeesReportPage from './pages/reports/fees-reports/FeesReportPage';
+import ReceiptsReportPage from './pages/reports/fees-reports/ReceiptsReportPage';
+import DueFeesReportPage from './pages/reports/fees-reports/DueFeesReportPage';
+import FineReportPage from './pages/reports/fees-reports/FineReportPage';
+import AccountStatementPage from './pages/reports/financial-reports/AccountStatementPage';
+import IncomeReportsPage from './pages/reports/financial-reports/IncomeReportsPage';
+import ExpenseReportsPage from './pages/reports/financial-reports/ExpenseReportsPage';
+import TransactionsReportsPage from './pages/reports/financial-reports/TransactionsReportsPage';
+import BalanceSheetPage from './pages/reports/financial-reports/BalanceSheetPage';
+import IncomeVsExpensePage from './pages/reports/financial-reports/IncomeVsExpensePage';
+import AttendanceStudentReportsPage from './pages/reports/attendance-reports/StudentReportsPage';
+import StudentDailyReportsPage from './pages/reports/attendance-reports/StudentDailyReportsPage';
+import StudentOverviewReportsPage from './pages/reports/attendance-reports/StudentOverviewReportsPage';
+import SubjectWiseReportsPage from './pages/reports/attendance-reports/SubjectWiseReportsPage';
+import SubjectWiseByDayPage from './pages/reports/attendance-reports/SubjectWiseByDayPage';
+import SubjectWiseByMonthPage from './pages/reports/attendance-reports/SubjectWiseByMonthPage';
+import AttendanceEmployeeReportsPage from './pages/reports/attendance-reports/EmployeeReportsPage';
+import AttendanceExamReportsPage from './pages/reports/attendance-reports/ExamReportsPage';
+import PayrollSummaryPage from './pages/reports/hr-reports/PayrollSummaryPage';
+import LeaveReportsPage from './pages/reports/hr-reports/LeaveReportsPage';
+import ReportCardPage from './pages/reports/examination-reports/ReportCardPage';
+import TabulationSheetPage from './pages/reports/examination-reports/TabulationSheetPage';
+import ProgressReportsPage from './pages/reports/examination-reports/ProgressReportsPage';
+import StockReportPage from './pages/reports/inventory-reports/StockReportPage';
+import PurchaseReportPage from './pages/reports/inventory-reports/PurchaseReportPage';
+import SalesReportPage from './pages/reports/inventory-reports/SalesReportPage';
+import IssuesReportPage from './pages/reports/inventory-reports/IssuesReportPage';
+
+// Academic Pages
+import ControlClassesPage from './pages/academic/ControlClassesPage';
+import AssignClassTeacherPage from './pages/academic/AssignClassTeacherPage';
+import SubjectPage from './pages/academic/SubjectPage';
+import ClassAssignPage from './pages/academic/ClassAssignPage';
+import ClassSchedulePage from './pages/academic/ClassSchedulePage';
+import TeacherSchedulePage from './pages/academic/TeacherSchedulePage';
+import PromotionPage from './pages/academic/PromotionPage';
 
 
 // 1. Authentication Context with Profile
@@ -256,15 +371,12 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         }
     };
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        getSessionData(session).finally(() => setLoading(false));
-    });
-
-    // Listen for auth state changes
+    // Listen for auth state changes. This is the single source of truth.
+    // It fires once on initial load and again on any auth event.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (_event, session) => {
             await getSessionData(session);
+            setLoading(false); // Set loading to false after the first check completes.
         }
     );
 
@@ -274,14 +386,6 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }, []);
 
   const value = { user, profile, school, loading };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-background dark:bg-gray-900">
-        <div className="text-xl font-semibold text-text-primary dark:text-gray-100">Loading Acadeemia...</div>
-      </div>
-    );
-  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
@@ -373,7 +477,88 @@ function App() {
               <Route path="/settings" element={<ProtectedRoute allowedRoles={ALL_AUTHENTICATED}><SettingsPage /></ProtectedRoute>} />
               <Route path="/students" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentsPage /></ProtectedRoute>} />
               <Route path="/student/profile/:studentId" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentProfilePage /></ProtectedRoute>} />
-              <Route path="/attendance" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AttendancePage /></ProtectedRoute>} />
+              
+              {/* Attendance Routes */}
+              <Route path="/attendance/student" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentAttendancePage /></ProtectedRoute>} />
+              <Route path="/attendance/subject-wise" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SubjectWiseAttendancePage /></ProtectedRoute>} />
+              <Route path="/attendance/employee" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><EmployeeAttendancePage /></ProtectedRoute>} />
+              <Route path="/attendance/exam" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ExamAttendancePage /></ProtectedRoute>} />
+              
+              {/* QR Code Attendance Routes */}
+              <Route path="/qr-code-attendance/attendance" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QrCodeAttendancePage /></ProtectedRoute>} />
+              <Route path="/qr-code-attendance/settings" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QrCodeSettingsPage /></ProtectedRoute>} />
+              <Route path="/qr-code-attendance/reports/student" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QrCodeStudentReportsPage /></ProtectedRoute>} />
+              <Route path="/qr-code-attendance/reports/employee" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QrCodeEmployeeReportsPage /></ProtectedRoute>} />
+
+              {/* Library Routes */}
+              <Route path="/library/books" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><BooksPage /></ProtectedRoute>} />
+              <Route path="/library/books-category" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><BooksCategoryPage /></ProtectedRoute>} />
+              <Route path="/library/my-issued-book" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><MyIssuedBookPage /></ProtectedRoute>} />
+              <Route path="/library/book-issue-return" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><BookIssueReturnPage /></ProtectedRoute>} />
+              
+              {/* Events Routes */}
+              <Route path="/events/type" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><EventTypePage /></ProtectedRoute>} />
+              <Route path="/events/main" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><EventsPage /></ProtectedRoute>} />
+
+              {/* Bulk SMS and Email Routes */}
+              <Route path="/bulk-sms-email/send" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SendSmsEmailPage /></ProtectedRoute>} />
+              <Route path="/bulk-sms-email/report" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SmsEmailReportPage /></ProtectedRoute>} />
+              <Route path="/bulk-sms-email/sms-template" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SmsTemplatePage /></ProtectedRoute>} />
+              <Route path="/bulk-sms-email/email-template" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><EmailTemplatePage /></ProtectedRoute>} />
+              <Route path="/bulk-sms-email/student-birthday" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentBirthdayWishesPage /></ProtectedRoute>} />
+              <Route path="/bulk-sms-email/staff-birthday" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StaffBirthdayWishesPage /></ProtectedRoute>} />
+              
+              {/* Student Accounting Routes */}
+              <Route path="/student-accounting/offline-payments/type" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><PaymentsTypePage /></ProtectedRoute>} />
+              <Route path="/student-accounting/offline-payments/main" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><OfflinePaymentsAccPage /></ProtectedRoute>} />
+              <Route path="/student-accounting/fees-type" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesTypePage /></ProtectedRoute>} />
+              <Route path="/student-accounting/fees-group" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesGroupPage /></ProtectedRoute>} />
+              <Route path="/student-accounting/fine-setup" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FineSetupPage /></ProtectedRoute>} />
+              <Route path="/student-accounting/fees-allocation" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesAllocationPage /></ProtectedRoute>} />
+              <Route path="/student-accounting/pay-invoice" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesPayInvoicePage /></ProtectedRoute>} />
+              <Route path="/student-accounting/due-invoice" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><DueFeesInvoicePage /></ProtectedRoute>} />
+              <Route path="/student-accounting/fees-reminder" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesReminderPage /></ProtectedRoute>} />
+
+              {/* Office Accounting Routes */}
+              <Route path="/office-accounting/account" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AccountPageOA /></ProtectedRoute>} />
+              <Route path="/office-accounting/new-deposit" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><NewDepositPage /></ProtectedRoute>} />
+              <Route path="/office-accounting/new-expense" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><NewExpensePage /></ProtectedRoute>} />
+              <Route path="/office-accounting/all-transactions" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AllTransactionsPage /></ProtectedRoute>} />
+              <Route path="/office-accounting/voucher-head" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><VoucherHeadPage /></ProtectedRoute>} />
+
+              {/* Reports Routes */}
+              <Route path="/reports/student-reports/student" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentReportsMainPage /></ProtectedRoute>} />
+              <Route path="/reports/student-reports/login-credential" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><LoginCredentialPage /></ProtectedRoute>} />
+              <Route path="/reports/student-reports/admission" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AdmissionReportPage /></ProtectedRoute>} />
+              <Route path="/reports/student-reports/class-section" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ClassSectionReportPage /></ProtectedRoute>} />
+              <Route path="/reports/student-reports/sibling" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SiblingReportPage /></ProtectedRoute>} />
+              <Route path="/reports/fees-reports/fees" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FeesReportPage /></ProtectedRoute>} />
+              <Route path="/reports/fees-reports/receipts" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ReceiptsReportPage /></ProtectedRoute>} />
+              <Route path="/reports/fees-reports/due-fees" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><DueFeesReportPage /></ProtectedRoute>} />
+              <Route path="/reports/fees-reports/fine" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><FineReportPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/account-statement" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AccountStatementPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/income" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><IncomeReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/expense" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ExpenseReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/transactions" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><TransactionsReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/balance-sheet" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><BalanceSheetPage /></ProtectedRoute>} />
+              <Route path="/reports/financial-reports/income-vs-expense" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><IncomeVsExpensePage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/student" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AttendanceStudentReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/student-daily" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentDailyReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/student-overview" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StudentOverviewReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/subject-wise" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SubjectWiseReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/subject-wise-day" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SubjectWiseByDayPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/subject-wise-month" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SubjectWiseByMonthPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/employee" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AttendanceEmployeeReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/attendance-reports/exam" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AttendanceExamReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/hr-reports/payroll-summary" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><PayrollSummaryPage /></ProtectedRoute>} />
+              <Route path="/reports/hr-reports/leave" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><LeaveReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/examination-reports/report-card" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ReportCardPage /></ProtectedRoute>} />
+              <Route path="/reports/examination-reports/tabulation-sheet" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><TabulationSheetPage /></ProtectedRoute>} />
+              <Route path="/reports/examination-reports/progress" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ProgressReportsPage /></ProtectedRoute>} />
+              <Route path="/reports/inventory-reports/stock" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><StockReportPage /></ProtectedRoute>} />
+              <Route path="/reports/inventory-reports/purchase" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><PurchaseReportPage /></ProtectedRoute>} />
+              <Route path="/reports/inventory-reports/sales" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SalesReportPage /></ProtectedRoute>} />
+              <Route path="/reports/inventory-reports/issues" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><IssuesReportPage /></ProtectedRoute>} />
               
               {/* Super Admin Only Routes */}
               <Route path="/company-dashboard" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CompanyDashboardPage /></ProtectedRoute>} />
@@ -424,6 +609,43 @@ function App() {
               <Route path="/certificate/template" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><CertificateTemplatePage /></ProtectedRoute>} />
               <Route path="/certificate/generate-student" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><GenerateStudentCertificatePage /></ProtectedRoute>} />
               <Route path="/certificate/generate-employee" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><GenerateEmployeeCertificatePage /></ProtectedRoute>} />
+
+              {/* Live Class Routes */}
+              <Route path="/live-class/main" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><LiveClassPage /></ProtectedRoute>} />
+              <Route path="/live-class/reports" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><LiveClassReportsPage /></ProtectedRoute>} />
+
+              {/* Attachment Routes */}
+              <Route path="/attachments/upload" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><UploadContentPage /></ProtectedRoute>} />
+              <Route path="/attachments/type" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AttachmentTypePage /></ProtectedRoute>} />
+              
+              {/* Homework Routes */}
+              <Route path="/homework/main" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><HomeworkPage /></ProtectedRoute>} />
+              <Route path="/homework/evaluation-report" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><EvaluationReportPage /></ProtectedRoute>} />
+
+              {/* Exam Master Routes */}
+              <Route path="/exam-master/exam" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ExamPage /></ProtectedRoute>} />
+              <Route path="/exam-master/exam-schedule" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ExamSchedulePage /></ProtectedRoute>} />
+              <Route path="/exam-master/marks" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><MarksPage /></ProtectedRoute>} />
+
+              {/* Online Exam Routes */}
+              <Route path="/online-exam/main" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><OnlineExamPage /></ProtectedRoute>} />
+              <Route path="/online-exam/question-bank" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QuestionBankPage /></ProtectedRoute>} />
+              <Route path="/online-exam/question-group" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><QuestionGroupPage /></ProtectedRoute>} />
+              <Route path="/online-exam/position-generate" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><PositionGeneratePage /></ProtectedRoute>} />
+              <Route path="/online-exam/exam-result" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ExamResultPage /></ProtectedRoute>} />
+
+              {/* Supervision Routes */}
+              <Route path="/supervision/hostel" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><HostelSupervisionPage /></ProtectedRoute>} />
+              <Route path="/supervision/transport" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><TransportSupervisionPage /></ProtectedRoute>} />
+
+              {/* Academic Routes */}
+              <Route path="/academic/control-classes" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ControlClassesPage /></ProtectedRoute>} />
+              <Route path="/academic/assign-class-teacher" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AssignClassTeacherPage /></ProtectedRoute>} />
+              <Route path="/academic/subject" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SubjectPage /></ProtectedRoute>} />
+              <Route path="/academic/class-assign" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ClassAssignPage /></ProtectedRoute>} />
+              <Route path="/academic/class-schedule" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><ClassSchedulePage /></ProtectedRoute>} />
+              <Route path="/academic/teacher-schedule" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><TeacherSchedulePage /></ProtectedRoute>} />
+              <Route path="/academic/promotion" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><PromotionPage /></ProtectedRoute>} />
 
               {/* Payroll Routes */}
               <Route path="/payroll/salary-template" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><SalaryTemplatePage /></ProtectedRoute>} />
