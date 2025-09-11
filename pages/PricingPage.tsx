@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from 'react';
 import LandingLayout from '../components/LandingLayout';
 import { getPlans, Plan, createSchoolAndSubscription, SchoolSubscriptionData, getPublicCurrencies, Currency } from '../db';
@@ -396,20 +394,15 @@ const PricingPage = () => {
 
                 // Fetch currencies
                 const currencyData = await getPublicCurrencies();
-                const allCurrencies = [...currencyData];
-                // Ensure KES is present
-                if (!allCurrencies.some(c => c.code === 'KES')) {
-                    allCurrencies.push({ id: 999, school_id: null, name: 'Kenyan Shilling', code: 'KES', symbol: 'KSh' });
+                let availableCurrencies = currencyData && currencyData.length > 0
+                    ? [...currencyData]
+                    : [{ id: 0, school_id: null, name: 'US Dollar', code: 'USD', symbol: '$' }];
+
+                // Ensure KES is always an option for demonstration/regional purposes
+                if (!availableCurrencies.some(c => c.code === 'KES')) {
+                    availableCurrencies.push({ id: 999, school_id: null, name: 'Kenyan Shilling', code: 'KES', symbol: 'KSh' });
                 }
-                
-                if (allCurrencies.length > 0) {
-                    setCurrencies(allCurrencies);
-                } else {
-                    setCurrencies([
-                        { id: 0, school_id: null, name: 'US Dollar', code: 'USD', symbol: '$' },
-                        { id: 999, school_id: null, name: 'Kenyan Shilling', code: 'KES', symbol: 'KSh' }
-                    ]);
-                }
+                setCurrencies(availableCurrencies);
                 
                 // Fetch exchange rates
                 const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
@@ -420,8 +413,14 @@ const PricingPage = () => {
             } catch (err: any) {
                 const newError = err.message || "Failed to load pricing data.";
                 setError(prev => prev ? `${prev} ${newError}` : newError);
-                console.error(err);
-                setExchangeRates({ 'USD': 1 }); // Fallback
+                console.error("Failed to fetch live currency rates, using fallback rates.", err);
+                // Provide a more robust fallback if the API fails
+                setExchangeRates({ 
+                    'USD': 1,
+                    'KES': 130.00, // Approximate fallback rate
+                    'EUR': 0.92,   // Approximate fallback rate
+                    'GBP': 0.79    // Approximate fallback rate
+                });
             } finally {
                 setLoading(false);
                 setLoadingCurrencies(false);
