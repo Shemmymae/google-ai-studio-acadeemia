@@ -84,7 +84,7 @@ const CustomCalendar = ({ month, setMonth }: { month: Date, setMonth: (date: Dat
                     <div
                         key={i}
                         className={`
-                            h-16 sm:h-20 p-1 border-t border-l dark:border-gray-700
+                            h-16 sm:h-20 p-1 border-t border-l dark:border-gray-700 text-text-primary dark:text-gray-200
                             ${!isSameMonth(day, month) && 'text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50'}
                             ${isToday(day) && 'bg-primary/10'}
                         `}

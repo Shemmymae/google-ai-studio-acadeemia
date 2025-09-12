@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -45,37 +42,44 @@ const LoginPage = () => {
     setMessage('');
 
     try {
-      // FIX: Use v2's `signInWithPassword` and handle the response correctly.
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
       if (signInError) {
-        // If sign-in fails, assume it might be a new user and try to sign them up.
-        // In a real production app, you might want to separate Login and Sign Up forms.
-        const { error: signUpError } = await supabase.auth.signUp({ email, password });
-        
-        if (signUpError) {
-            // If both sign-in and sign-up fail, throw the sign-up error as it's more likely the issue.
-            throw signUpError;
-        }
-        // Let onAuthStateChange handle the redirect after sign-up
-      } else if (signInData.user) {
-        // On successful sign-in, check role and set sessionStorage.
-        // The useEffect hook will handle the redirect once the profile is loaded.
-        const { data: userProfile } = await supabase
+        throw signInError;
+      }
+
+      if (data.user) {
+        // On successful sign-in, check the user's profile to set the admin view.
+        // The onAuthStateChange listener will handle the redirect.
+        const { data: userProfile, error: profileError } = await supabase
             .from('user_profiles')
             .select('role')
-            .eq('id', signInData.user.id)
+            .eq('id', data.user.id)
             .single();
+        
+        if (profileError) {
+            // This can happen if the profile wasn't created correctly on signup.
+            // Log the user out and show a supportive error.
+            console.error("Login successful but failed to fetch profile:", profileError);
+            await supabase.auth.signOut();
+            throw new Error("Login succeeded, but there was an issue retrieving your user profile. Please contact support.");
+        }
 
         if (userProfile?.role === 'Super Admin') {
-            sessionStorage.setItem('adminView', 'company'); // Ensure company view is default for Super Admin
+            sessionStorage.setItem('adminView', 'company');
         } else {
-            sessionStorage.removeItem('adminView'); // Clean up for other roles
+            sessionStorage.removeItem('adminView');
         }
+        // Redirect is handled by the useEffect hook watching for `user` and `profile` updates.
+      } else {
+          // This case should ideally not be reached if there is no error,
+          // but as a safeguard:
+          throw new Error("Sign in was not successful. Please try again.");
       }
     } catch (err: any) {
         setError(err.error_description || err.message);
     } finally {
+      // The loading state should always be reset.
       setLoading(false);
     }
   };
