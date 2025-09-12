@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { useParams } from "react-router-dom";
@@ -114,16 +112,16 @@ const EventsCalendar = () => {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm h-full">
             <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
                  <div className="flex items-center space-x-1">
-                     <button onClick={handlePrevMonth} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">&lt;</button>
-                     <button onClick={handleNextMonth} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">&gt;</button>
-                     <button onClick={handleToday} className="px-3 py-1 text-xs font-semibold border rounded dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">Today</button>
+                     <button onClick={handlePrevMonth} className="p-1 rounded text-text-secondary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">&lt;</button>
+                     <button onClick={handleNextMonth} className="p-1 rounded text-text-secondary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">&gt;</button>
+                     <button onClick={handleToday} className="px-3 py-1 text-xs font-semibold border rounded text-text-secondary dark:text-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">Today</button>
                 </div>
                 <h3 className="font-semibold text-gray-700 dark:text-gray-200 order-first w-full text-center sm:order-none sm:w-auto">
                     🗓️ {format(month, 'MMMM yyyy')}
                 </h3>
                  <div className="flex items-center space-x-1 bg-gray-200 dark:bg-gray-700 rounded-md p-1 text-xs">
                     {['Month', 'Week', 'Day', 'List'].map(v => (
-                        <button key={v} onClick={() => setView(v)} className={`px-2 py-0.5 rounded ${view === v ? 'bg-white dark:bg-gray-800 text-primary shadow' : ''}`}>
+                        <button key={v} onClick={() => setView(v)} className={`px-2 py-0.5 rounded transition-colors ${view === v ? 'bg-white dark:bg-gray-800 text-primary shadow' : 'text-text-secondary dark:text-gray-300 hover:text-text-primary dark:hover:text-white'}`}>
                             {v}
                         </button>
                     ))}
