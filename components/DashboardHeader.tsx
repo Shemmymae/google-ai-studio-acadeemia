@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../App';
 import ThemeToggle from './ThemeToggle';
-// FIX: Corrected import path for react-router-dom.
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import { useTheme } from './ThemeProvider';
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from '../supabase';
+import { useTheme } from './ThemeProvider';
 
 // --- SVG Icons for the new header ---
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>;
@@ -17,79 +16,44 @@ const BellIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-
 interface DashboardHeaderProps {
     title: string;
     onToggleSidebar: () => void;
+    showMobileMenuButton: boolean;
+    showLogo?: boolean;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, onToggleSidebar }) => {
-    const { user, school, profile } = useAuth();
-    const { theme } = useTheme();
-    const location = useLocation();
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, onToggleSidebar, showMobileMenuButton, showLogo }) => {
+    const { user, profile } = useAuth();
     const navigate = useNavigate();
-
-    const isSuperAdmin = profile?.role === 'Super Admin';
-    let adminView: 'company' | 'school' = 'school'; // Default for non-superadmins or if logic fails
-
-    if (isSuperAdmin) {
-        const storedView = sessionStorage.getItem('adminView') as 'company' | 'school' | null;
-        if (storedView) {
-            adminView = storedView;
-        } else {
-            // Fallback logic if sessionStorage is not set, mimics sidebar logic
-            const schoolManagementPaths = [
-                '/dashboard', '/school/', '/students', '/courses', '/attendance', '/hrm', '/inventory',
-                '/security/', '/frontend/', '/reception/', '/admission/', '/alumni/', '/addon-manager',
-                '/system-settings/role-permission', '/system-settings/session', '/system-settings/translations',
-                '/system-settings/modules', '/system-settings/student-field', '/system-settings/custom-field',
-                '/system-settings/user-login-log', '/system-settings/school-config/'
-              ];
-            const isSchoolView = schoolManagementPaths.some(path => location.pathname.startsWith(path));
-            adminView = isSchoolView ? 'school' : 'company';
-        }
-    }
-
-    const isCompanyView = adminView === 'company';
-
     const [isProfileOpen, setProfileOpen] = useState(false);
+    const { theme } = useTheme();
+
+    const logoLight = 'https://oqasxrkbosdqaldwydeu.supabase.co/storage/v1/object/sign/website_images/logo/logo-light.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNWYwZjU5NS00NmQxLTRkOTctYTMxMS1lMmMxMTcyMzEyODUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX2ltYWdlcy9sb2dvL2xvZ28tbGlnaHQucG5nIiwiaWF0IjoxNzU2NzU2NzkzLCJleHAiOjMzMjkyNzU2NzkzfQ.4sLXHZ9j2o5OpP6lSjYHzGEXYU_-hPkHmZJ1zjETiQI';
+    const logoDark = 'https://oqasxrkbosdqaldwydeu.supabase.co/storage/v1/object/sign/website_images/logo/logo-dark.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNWYwZjU5NS00NmQxLTRkOTctYTMxMS1lMmMxMTcyMzEyODUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX2ltYWdlcy9sb2dvL2xvZ28tZGFyay5wbmciLCJpYXQiOjE3NTY3NTY3NjgsImV4cCI6MzMyOTI3NTY3Njh9.XpJbMk19-pJLNUoRSWyNbWDjvn4sUH9CmqOhAyxmzi0';
+    const logoSrc = theme === 'light' ? logoLight : logoDark;
 
     const handleLogout = async () => {
         sessionStorage.removeItem('adminView'); // Clean up view state
         navigate('/');
-        // FIX: The `signOut` method exists on `supabase.auth` in v1 and v2. This error was likely a cascade from other type issues. The call is correct.
         await supabase.auth.signOut();
     };
-
-    // --- RENDER COMPANY HEADER FOR COMPANY VIEW ---
-    if (isCompanyView) {
-        return (
-            <header className="bg-card dark:bg-gray-800 shadow-sm h-20 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 dark:border-b dark:border-gray-700">
-                <div className="flex items-center space-x-4">
-                    <button onClick={onToggleSidebar} className="p-2 rounded-full text-text-secondary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 xl:hidden" aria-label="Toggle sidebar">
-                        <MenuIcon />
-                    </button>
-                    <h1 className="text-xl md:text-2xl font-semibold text-text-primary dark:text-gray-100">{title}</h1>
-                </div>
-                <div className="flex items-center space-x-4">
-                    <ThemeToggle />
-                    <div className="hidden sm:block text-right">
-                        <p className="font-semibold text-text-primary dark:text-gray-100">{profile?.full_name || 'Super Admin'}</p>
-                        <p className="text-sm text-text-secondary dark:text-gray-400">{user?.email}</p>
-                    </div>
-                    <img className="h-12 w-12 rounded-full object-cover" src={user?.user_metadata?.avatar_url || "https://picsum.photos/id/1027/100/100"} alt="User avatar" />
-                </div>
-            </header>
-        );
-    }
     
-    // --- RENDER NEW, RESTYLED HEADER FOR ALL SCHOOL PAGES ---
+    // --- RENDER UNIFIED HEADER FOR ALL DASHBOARD PAGES ---
     return (
         <header className="bg-card dark:bg-gray-800 text-text-primary dark:text-gray-100 h-20 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 shadow-sm dark:border-b dark:border-gray-700">
             <div className="flex items-center space-x-2 md:space-x-4">
                 {/* Hamburger icon - for mobile/sidebar toggle */}
-                <button onClick={onToggleSidebar} className="p-2 rounded-full text-text-secondary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 xl:hidden" aria-label="Toggle sidebar">
-                    <MenuIcon />
-                </button>
-                <Link to="/dashboard" className="text-xl font-bold">
-                    {school?.name || 'Acadeemia'}
-                </Link>
+                {showMobileMenuButton && (
+                    <button onClick={onToggleSidebar} className="p-2 rounded-full text-text-secondary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 xl:hidden" aria-label="Toggle sidebar">
+                        <MenuIcon />
+                    </button>
+                )}
+                
+                {showLogo ? (
+                    <Link to="/dashboard">
+                        <img src={logoSrc} alt="Acadeemia Logo" className="h-10 w-auto" />
+                    </Link>
+                ) : (
+                    <h1 className="text-xl md:text-2xl font-semibold text-text-primary dark:text-gray-100">{title}</h1>
+                )}
             </div>
 
             <div className="flex items-center space-x-2 md:space-x-4">

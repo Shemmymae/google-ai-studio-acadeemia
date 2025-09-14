@@ -1,4 +1,5 @@
 
+
 import React, { useState, useContext, createContext, PropsWithChildren, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
@@ -44,6 +45,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import CompanyDashboardPage from './pages/CompanyDashboardPage';
+import SuperAdminLandingPage from './pages/SuperAdminLandingPage';
 
 // Inventory Pages
 import ProductPage from './pages/inventory/ProductPage';
@@ -561,6 +563,7 @@ function App() {
               <Route path="/reports/inventory-reports/issues" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><IssuesReportPage /></ProtectedRoute>} />
               
               {/* Super Admin Only Routes */}
+              <Route path="/admin-home" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><SuperAdminLandingPage /></ProtectedRoute>} />
               <Route path="/company-dashboard" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CompanyDashboardPage /></ProtectedRoute>} />
               <Route path="/crm" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CRMPage /></ProtectedRoute>} />
               <Route path="/integrations" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><IntegrationsPage /></ProtectedRoute>} />

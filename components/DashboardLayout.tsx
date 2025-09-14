@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { Link, useLocation } from "react-router-dom";
@@ -79,6 +75,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
+  // Determine if the sidebar should be shown based on the current route
+  const showSidebar = location.pathname !== '/admin-home';
+  const isSuperAdminLanding = location.pathname === '/admin-home';
 
   useEffect(() => {
     // --- Real-time Subscriptions for Form Submissions ---
@@ -122,9 +121,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
 
   return (
     <div className="flex bg-[#F0F2F5] dark:bg-gray-900 min-h-screen">
-      <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="flex-1 xl:ml-64 transition-all duration-300">
-        <DashboardHeader title={title} onToggleSidebar={() => setSidebarOpen(true)} />
+      {showSidebar && <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />}
+      <div className={`flex-1 ${showSidebar ? 'xl:ml-64' : ''} transition-all duration-300`}>
+        <DashboardHeader 
+            title={title} 
+            onToggleSidebar={() => setSidebarOpen(true)} 
+            showMobileMenuButton={showSidebar}
+            showLogo={isSuperAdminLanding}
+        />
         <main className="p-4 sm:p-6">
           {children}
         </main>

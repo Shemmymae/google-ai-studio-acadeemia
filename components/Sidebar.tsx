@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -180,6 +181,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
   
   const isSuperAdmin = profile?.role === 'Super Admin';
   const [adminView, setAdminView] = useState<'company' | 'school'>('company');
+  const isAtAdminHome = location.pathname === '/admin-home';
   
   // Set the view state and persist it in sessionStorage
   const handleSetView = (view: 'company' | 'school') => {
@@ -246,7 +248,6 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Demo Requests', path: '/forms-manager/demo-requests' },
           { name: 'Newsletter', path: '/forms-manager/newsletter' },
       ]},
-      { name: 'School System', icon: icons.school, path: '/dashboard' },
       { name: 'Settings', icon: icons.settings, children: [
           { name: 'Currency Management', path: '/currency-management' },
           { name: 'Global Settings', path: '/system-settings/global' },
@@ -596,20 +597,17 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
                 </Link>
             </div>
             <nav className="flex-1 px-4 py-4 overflow-y-auto">
-                {isSuperAdmin ? (
+                {isSuperAdmin && isAtAdminHome ? (
+                    <div className="text-center p-4 text-text-secondary dark:text-gray-400">
+                        Select a management area to begin.
+                    </div>
+                ) : isSuperAdmin ? (
                     adminView === 'company' ? (
                         <div className="space-y-1">
                             <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                                 Company Management
                             </h3>
                             {companyManagementNavItems.map(item => {
-                                if (item.name === 'School System') {
-                                    return (
-                                        <div key={item.name} onClick={() => handleSetView('school')}>
-                                            <NavItem item={item} />
-                                        </div>
-                                    );
-                                }
                                 return item.children ? <CollapsibleNavItem key={item.name} item={item} /> : <NavItem key={item.name} item={item} />;
                             })}
                         </div>
@@ -632,19 +630,11 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
                 )}
             </nav>
             <div className="mt-auto p-4 border-t border-gray-200 dark:border-gray-700">
-                {isSuperAdmin && adminView === 'school' ? (
-                     <Link to="/company-dashboard" onClick={() => handleSetView('company')} className="flex items-center w-full mt-2 px-4 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors duration-200">
+                {isSuperAdmin && !isAtAdminHome && (
+                    <Link to="/admin-home" className="flex items-center w-full px-4 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors duration-200">
                         {icons.back}
-                        <span className="ml-3 font-medium">Back to Main Menu</span>
+                        <span className="ml-3 font-medium">Back to Selection</span>
                     </Link>
-                ) : (
-                    <>
-                        <NavItem item={{name: 'Profile Settings', icon: icons.profileSettings, path: '/settings'}} />
-                        <button onClick={handleLogout} className="flex items-center w-full mt-2 px-4 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
-                            {icons.logout}
-                            <span className="ml-3 font-medium">Logout</span>
-                        </button>
-                    </>
                 )}
             </div>
         </aside>

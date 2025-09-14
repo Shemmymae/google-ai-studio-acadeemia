@@ -25,7 +25,7 @@ const LoginPage = () => {
   // Redirect if user is already logged in, ensuring profile is loaded to check role
   useEffect(() => {
     if (user && profile) {
-      const defaultPath = profile.role === 'Super Admin' ? '/company-dashboard' : '/dashboard';
+      const defaultPath = profile.role === 'Super Admin' ? '/admin-home' : '/dashboard';
       const from = location.state?.from?.pathname || defaultPath;
       navigate(from, { replace: true });
     }
