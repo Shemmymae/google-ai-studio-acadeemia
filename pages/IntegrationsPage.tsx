@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
-import { getGoogleAnalyticsConfig, upsertGoogleAnalyticsConfig, getCalendlyConfig, upsertCalendlyConfig, getPusherConfig, upsertPusherConfig, PusherConfig } from '../db';
+import { getGoogleAnalyticsConfig, upsertGoogleAnalyticsConfig, getCalendlyConfig, upsertCalendlyConfig, getPusherConfig, upsertPusherConfig, PusherConfig, getApiConfig, upsertApiConfig, ApiConfig } from '../db';
 
 
 // --- SVG Icons for Integrations ---
@@ -27,7 +27,7 @@ const ICONS: { [key: string]: React.ReactNode } = {
   'QuickBooks': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#2CA01C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 16V12" stroke="#2CA01C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 8H12.01" stroke="#2CA01C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   'Outlook Mail': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22" stroke="#0072C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12H22" stroke="#0072C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12L15 15" stroke="#0072C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12L15 9" stroke="#0072C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   'To Do': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 11.08V12C22 16.97 16.97 22 12 22C7.03 22 2 16.97 2 12C2 7.03 7.03 2 12 2C12.44 2 12.87 2.02 13.3 2.07" stroke="#3E65A4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 2L22 8" stroke="#3E65A4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 8L22 2" stroke="#3E65A4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  'API': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 13L6 17L2 13" stroke="#9FA8DA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 17V3" stroke="#9FA8DA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 11L18 7L22 11" stroke="#9FA8DA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M18 7V21" stroke="#9FA8DA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  'API': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   'Google Captcha': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.09 9C9.3251 8.33167 9.78915 7.76811 10.4 7.40913C11.0108 7.05016 11.7289 6.91894 12.4274 7.03871C13.1259 7.15848 13.774 7.52152 14.2792 8.0691C14.7844 8.61668 15.1194 9.31448 15.23 10" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 15C14.64 15.35 14.21 15.61 13.74 15.76" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   'PesaPal': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#AE2012" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12L22 17" stroke="#AE2012" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 2L2 7" stroke="#AE2012" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   'DPO Pay': <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12L22 17" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 2L2 7" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
@@ -57,12 +57,12 @@ const initialIntegrationData = [
     { id: 17, name: 'QuickBooks', description: 'Streamline your accounting by syncing financial data with QuickBooks.', category: 'Finance', connected: false },
     { id: 18, name: 'Outlook Mail', description: 'Send and receive emails from within Acadeemia using your Outlook account.', category: 'Communication', connected: false },
     { id: 19, name: 'To Do', description: 'Manage tasks and to-do lists for staff and students with Microsoft To Do.', category: 'Productivity', connected: false },
-    { id: 20, name: 'API', description: 'Access the Acadeemia API to build custom integrations and applications.', category: 'Developer Tools', connected: false },
-    { id: 21, name: 'Google Captcha', description: 'Protect your forms from spam and abuse with Google reCAPTCHA.', category: 'Security', connected: false },
-    { id: 22, name: 'PesaPal', description: 'Accept online payments through PesaPal for school fees and other services.', category: 'Finance', connected: false },
-    { id: 23, name: 'DPO Pay', description: 'Enable secure online payments with DPO Pay for a seamless checkout experience.', category: 'Finance', connected: false },
-    { id: 24, name: 'Mpesa', description: 'Collect payments easily in Kenya with the M-Pesa mobile money service.', category: 'Finance', connected: false },
-    { id: 25, name: 'Paystack', description: 'Process online payments from parents and students with Paystack.', category: 'Finance', connected: false },
+    { id: 20, name: 'Google Captcha', description: 'Protect your forms from spam and abuse with Google reCAPTCHA.', category: 'Security', connected: false },
+    { id: 21, name: 'PesaPal', description: 'Accept online payments through PesaPal for school fees and other services.', category: 'Finance', connected: false },
+    { id: 22, name: 'DPO Pay', description: 'Enable secure online payments with DPO Pay for a seamless checkout experience.', category: 'Finance', connected: false },
+    { id: 23, name: 'Mpesa', description: 'Collect payments easily in Kenya with the M-Pesa mobile money service.', category: 'Finance', connected: false },
+    { id: 24, name: 'Paystack', description: 'Process online payments from parents and students with Paystack.', category: 'Finance', connected: false },
+    { id: 25, name: 'API', description: 'Connect with external services using custom API keys and endpoints.', category: 'Developer Tools', connected: false },
 ].map(item => ({ ...item, icon: ICONS[item.name] || ICONS['API'] }));
 
 // --- Component for the toggle switch ---
@@ -228,6 +228,83 @@ const PusherConfigModal = ({ isOpen, onClose, onSave, initialConfig }: {
     );
 };
 
+// --- NEW: Component for API Modal ---
+const ApiConfigModal = ({ isOpen, onClose, onSave, initialConfig }: {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (config: Omit<ApiConfig, 'id' | 'user_id' | 'is_enabled'>) => void;
+    initialConfig: Partial<ApiConfig>;
+}) => {
+    const [apiKey, setApiKey] = useState(initialConfig.api_key || '');
+    const [endpointUrl, setEndpointUrl] = useState(initialConfig.endpoint_url || '');
+    const [authType, setAuthType] = useState(initialConfig.auth_type || 'Bearer');
+    const [headerName, setHeaderName] = useState(initialConfig.header_name || '');
+    const [showKey, setShowKey] = useState(false);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave({
+            api_key: apiKey,
+            endpoint_url: endpointUrl,
+            auth_type: authType as ApiConfig['auth_type'],
+            header_name: authType === 'Header' ? headerName : null,
+        });
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center" onClick={onClose}>
+            <div className="bg-card dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b dark:border-gray-700">
+                    <h2 className="text-xl font-bold text-text-primary dark:text-gray-100">Configure API Settings</h2>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="p-6 space-y-4">
+                        <div className="relative">
+                            <label htmlFor="apiKey" className="block text-sm font-medium text-text-secondary dark:text-gray-300 mb-2">API Key</label>
+                            <input
+                                id="apiKey"
+                                type={showKey ? 'text' : 'password'}
+                                value={apiKey}
+                                onChange={e => setApiKey(e.target.value)}
+                                placeholder="Enter your secret API key"
+                                className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white pr-10"
+                                required
+                            />
+                             <button type="button" onClick={() => setShowKey(!showKey)} className="absolute right-3 top-9 text-gray-500">
+                                {showKey ? <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .527-1.663 1.49-3.16 2.68-4.32m.878-1.02A13.937 13.937 0 0112 5c4.478 0 8.268 2.943 9.542 7a13.937 13.937 0 01-1.543 3.351m-4.221-4.221a3 3 0 11-4.242-4.242M1 1l22 22" /></svg>}
+                            </button>
+                        </div>
+                        <div>
+                            <label htmlFor="endpointUrl" className="block text-sm font-medium text-text-secondary dark:text-gray-300 mb-2">Endpoint URL</label>
+                            <input type="url" id="endpointUrl" value={endpointUrl} onChange={e => setEndpointUrl(e.target.value)} placeholder="https://api.example.com/v1" className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label htmlFor="authType" className="block text-sm font-medium text-text-secondary dark:text-gray-300 mb-2">Authentication Type</label>
+                            {/* FIX: Cast event target value to the correct type for the state setter */}
+                            <select id="authType" value={authType} onChange={e => setAuthType(e.target.value as 'Bearer' | 'Header')} className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600">
+                                <option value="Bearer">Bearer Token</option>
+                                <option value="Header">API Key in Header</option>
+                            </select>
+                        </div>
+                        {authType === 'Header' && (
+                             <div>
+                                <label htmlFor="headerName" className="block text-sm font-medium text-text-secondary dark:text-gray-300 mb-2">Header Name</label>
+                                <input type="text" id="headerName" value={headerName} onChange={e => setHeaderName(e.target.value)} placeholder="e.g., X-API-KEY" className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                            </div>
+                        )}
+                    </div>
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 flex justify-end gap-3">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">Cancel</button>
+                        <button type="submit" className="px-4 py-2 text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary-hover transition-colors">Save & Enable</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
 
 const IntegrationsPage = () => {
     const categories = ['All', 'Finance', 'Communication', 'Productivity', 'Analytics', 'Security', 'Developer Tools'];
@@ -242,38 +319,39 @@ const IntegrationsPage = () => {
     const [calendlyLink, setCalendlyLink] = useState('');
     const [isPusherModalOpen, setIsPusherModalOpen] = useState(false);
     const [pusherConfig, setPusherConfig] = useState<Partial<PusherConfig>>({});
+    const [isApiModalOpen, setIsApiModalOpen] = useState(false);
+    const [apiConfig, setApiConfig] = useState<Partial<ApiConfig>>({});
 
 
     // Fetch configs on load
     useEffect(() => {
         const fetchConfigs = async () => {
-            const gaConfig = await getGoogleAnalyticsConfig();
-            if (gaConfig) {
-                setGaMeasurementId(gaConfig.measurement_id || '');
-                setIntegrations(prev =>
-                    prev.map(int =>
-                        int.name === 'Google Analytics' ? { ...int, connected: gaConfig.is_enabled } : int
-                    )
-                );
-            }
-            const calendlyConfig = await getCalendlyConfig();
-            if (calendlyConfig) {
-                setCalendlyLink(calendlyConfig.scheduling_link || '');
-                setIntegrations(prev =>
-                    prev.map(int =>
-                        int.name === 'Calendly' ? { ...int, connected: calendlyConfig.is_enabled } : int
-                    )
-                );
-            }
-            const pusherCfg = await getPusherConfig();
-            if (pusherCfg) {
-                setPusherConfig(pusherCfg);
-                setIntegrations(prev =>
-                    prev.map(int =>
-                        int.name === 'Pusher' ? { ...int, connected: pusherCfg.is_enabled } : int
-                    )
-                );
-            }
+            const [gaConfig, calendlyConfig, pusherCfg, apiCfg] = await Promise.all([
+                getGoogleAnalyticsConfig(),
+                getCalendlyConfig(),
+                getPusherConfig(),
+                getApiConfig(),
+            ]);
+
+            setIntegrations(prev => prev.map(int => {
+                if (int.name === 'Google Analytics' && gaConfig) {
+                    setGaMeasurementId(gaConfig.measurement_id || '');
+                    return { ...int, connected: gaConfig.is_enabled };
+                }
+                if (int.name === 'Calendly' && calendlyConfig) {
+                    setCalendlyLink(calendlyConfig.scheduling_link || '');
+                    return { ...int, connected: calendlyConfig.is_enabled };
+                }
+                if (int.name === 'Pusher' && pusherCfg) {
+                    setPusherConfig(pusherCfg);
+                    return { ...int, connected: pusherCfg.is_enabled };
+                }
+                if (int.name === 'API' && apiCfg) {
+                    setApiConfig(apiCfg);
+                    return { ...int, connected: apiCfg.is_enabled };
+                }
+                return int;
+            }));
         };
         fetchConfigs();
     }, []);
@@ -302,6 +380,13 @@ const IntegrationsPage = () => {
                 setIntegrations(prev => prev.map(int => (int.id === id ? { ...int, connected: false } : int)));
             } else {
                 setIsPusherModalOpen(true);
+            }
+        } else if (integrationToToggle.name === 'API') {
+             if (integrationToToggle.connected) {
+                await upsertApiConfig({ is_enabled: false });
+                setIntegrations(prev => prev.map(int => (int.id === id ? { ...int, connected: false } : int)));
+            } else {
+                setIsApiModalOpen(true);
             }
         } else {
             setIntegrations(prev =>
@@ -350,6 +435,17 @@ const IntegrationsPage = () => {
         }
     };
 
+    const handleSaveApiConfig = async (config: Omit<ApiConfig, 'id' | 'user_id' | 'is_enabled'>) => {
+        try {
+            await upsertApiConfig({ ...config, is_enabled: true });
+            setApiConfig({ ...apiConfig, ...config, is_enabled: true });
+            setIntegrations(prev => prev.map(int => int.name === 'API' ? { ...int, connected: true } : int));
+            setIsApiModalOpen(false);
+        } catch (error) {
+            console.error("Failed to save API config:", error);
+        }
+    };
+
     const filteredIntegrations = useMemo(() => {
         return integrations
             .filter(int => activeCategory === 'All' || int.category === activeCategory)
@@ -375,6 +471,12 @@ const IntegrationsPage = () => {
                 onClose={() => setIsPusherModalOpen(false)}
                 onSave={handleSavePusherConfig}
                 initialConfig={pusherConfig}
+            />
+            <ApiConfigModal
+                isOpen={isApiModalOpen}
+                onClose={() => setIsApiModalOpen(false)}
+                onSave={handleSaveApiConfig}
+                initialConfig={apiConfig}
             />
             <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow-md">
                 {/* Header */}

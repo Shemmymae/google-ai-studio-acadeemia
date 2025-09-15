@@ -347,6 +347,12 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     
             const currentProfile = profileData as UserProfile | null;
             setProfile(currentProfile);
+
+            if (currentProfile?.role === 'Super Admin') {
+                sessionStorage.setItem('adminView', 'company');
+            } else {
+                sessionStorage.removeItem('adminView');
+            }
     
             // Fetch school if school_id exists on profile
             if (currentProfile && currentProfile.school_id) {
@@ -370,6 +376,7 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
             // Clear profile and school on logout
             setProfile(null);
             setSchool(null);
+            sessionStorage.removeItem('adminView');
         }
     };
 

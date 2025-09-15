@@ -1,6 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation, Link, useParams } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import { getPermissionsForRole, updatePermissionsForRole } from '../../db';
+
 
 const ICONS = {
     update: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>,
@@ -45,6 +49,7 @@ type PermissionState = Record<string, { view: boolean; add: boolean; edit: boole
 
 const RolePermissionsAssignmentPage = () => {
     const location = useLocation();
+    const { roleId } = useParams<{ roleId: string }>();
     const { roleName } = location.state || { roleName: 'Role' };
     
     const initialPermissions = useMemo(() => {
@@ -56,6 +61,44 @@ const RolePermissionsAssignmentPage = () => {
     }, []);
 
     const [permissions, setPermissions] = useState<PermissionState>(initialPermissions);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState('');
+
+     useEffect(() => {
+        const fetchPermissions = async () => {
+            if (!roleId) {
+                setError('Role ID is missing from the URL.');
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
+            setError(null);
+            try {
+                const fetchedPermissions = await getPermissionsForRole(parseInt(roleId));
+                
+                const newPermissionsState = { ...initialPermissions };
+                fetchedPermissions.forEach(p => {
+                    if (newPermissionsState[p.feature]) {
+                        newPermissionsState[p.feature] = {
+                            view: p.view,
+                            add: p.add,
+                            edit: p.edit,
+                            delete: p.delete,
+                        };
+                    }
+                });
+                setPermissions(newPermissionsState);
+            } catch (err: any) {
+                setError(err.message || 'Failed to fetch permissions.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPermissions();
+    }, [roleId, initialPermissions]);
 
     const handlePermissionChange = (feature: string, type: 'view' | 'add' | 'edit' | 'delete', value: boolean) => {
         setPermissions(prev => ({
@@ -72,6 +115,30 @@ const RolePermissionsAssignmentPage = () => {
         setPermissions(newState);
     };
 
+    const handleUpdate = async () => {
+        if (!roleId) {
+            setError('Role ID is missing.');
+            return;
+        }
+        setSaving(true);
+        setError(null);
+        setSuccessMessage('');
+        try {
+            await updatePermissionsForRole(parseInt(roleId), permissions);
+            setSuccessMessage('Permissions updated successfully!');
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err: any) {
+            setError(err.message || 'Failed to save permissions.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+
+    if (loading) {
+        return <DashboardLayout title="Loading..."><div className="text-center p-8">Loading permissions...</div></DashboardLayout>;
+    }
+    
     return (
         <DashboardLayout title="Roles">
             <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow-md">
@@ -81,6 +148,8 @@ const RolePermissionsAssignmentPage = () => {
                         &larr; Back to Role List
                     </Link>
                 </div>
+                {error && <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">{error}</div>}
+                {successMessage && <div className="bg-green-100 text-green-700 p-3 rounded-md mb-4">{successMessage}</div>}
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -129,8 +198,8 @@ const RolePermissionsAssignmentPage = () => {
                 </div>
 
                 <div className="pt-8 mt-6 border-t dark:border-gray-700 flex justify-center">
-                    <button type="button" className="flex items-center px-6 py-2 bg-primary text-white rounded-md font-semibold hover:bg-primary-hover">
-                        {ICONS.update} Update
+                    <button type="button" onClick={handleUpdate} disabled={saving} className="flex items-center px-6 py-2 bg-primary text-white rounded-md font-semibold hover:bg-primary-hover disabled:opacity-70">
+                        {ICONS.update} {saving ? 'Updating...' : 'Update'}
                     </button>
                 </div>
             </div>

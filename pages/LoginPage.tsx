@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -42,45 +43,22 @@ const LoginPage = () => {
     setMessage('');
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (signInError) {
         throw signInError;
       }
-
-      if (data.user) {
-        // On successful sign-in, check the user's profile to set the admin view.
-        // The onAuthStateChange listener will handle the redirect.
-        const { data: userProfile, error: profileError } = await supabase
-            .from('user_profiles')
-            .select('role')
-            .eq('id', data.user.id)
-            .single();
-        
-        if (profileError) {
-            // This can happen if the profile wasn't created correctly on signup.
-            // Log the user out and show a supportive error.
-            console.error("Login successful but failed to fetch profile:", profileError);
-            await supabase.auth.signOut();
-            throw new Error("Login succeeded, but there was an issue retrieving your user profile. Please contact support.");
-        }
-
-        if (userProfile?.role === 'Super Admin') {
-            sessionStorage.setItem('adminView', 'company');
-        } else {
-            sessionStorage.removeItem('adminView');
-        }
-        // Redirect is handled by the useEffect hook watching for `user` and `profile` updates.
-      } else {
-          // This case should ideally not be reached if there is no error,
-          // but as a safeguard:
-          throw new Error("Sign in was not successful. Please try again.");
-      }
+      // On successful sign in, the AuthProvider's onAuthStateChange listener
+      // will update the user and profile context, which will trigger the
+      // useEffect hook in this component to navigate the user away.
+      // The loading spinner will remain until navigation occurs.
     } catch (err: any) {
         setError(err.error_description || err.message);
-    } finally {
-      // The loading state should always be reset.
-      setLoading(false);
+        // Only stop loading if there's an error.
+        setLoading(false);
     }
   };
 

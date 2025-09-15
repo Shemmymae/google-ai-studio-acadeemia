@@ -1,8 +1,10 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import { getRoles, addRole, updateRole, Role, getSchools, School, syncDefaultRolesForAllSchools } from '../../db';
+import { useAuth } from '../../App';
 
 // --- ICONS ---
 const ICONS = {
@@ -13,18 +15,14 @@ const ICONS = {
     save: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>,
 };
 
-const initialRoleData = [
-    { id: 1, name: 'Admin', isSystemRole: true },
-    { id: 2, name: 'Teacher', isSystemRole: true },
-    { id: 3, name: 'Accountant', isSystemRole: true },
-    { id: 4, name: 'Librarian', isSystemRole: true },
-    { id: 5, name: 'Receptionist', isSystemRole: true },
-];
-
-type Role = typeof initialRoleData[0];
-
 const EditRoleModal = ({ isOpen, onClose, onUpdate, role }: { isOpen: boolean; onClose: () => void; onUpdate: (role: Role) => void; role: Role | null; }) => {
     const [name, setName] = useState(role?.name || '');
+
+    useEffect(() => {
+        if (role) {
+            setName(role.name);
+        }
+    }, [role]);
 
     if (!isOpen || !role) return null;
 
@@ -58,19 +56,83 @@ const EditRoleModal = ({ isOpen, onClose, onUpdate, role }: { isOpen: boolean; o
 
 const RolePermissionPage = () => {
     const [activeTab, setActiveTab] = useState('list');
-    const [roleData, setRoleData] = useState(initialRoleData);
+    const [roleData, setRoleData] = useState<Role[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [roleToEdit, setRoleToEdit] = useState<Role | null>(null);
 
-    const handleUpdateRole = (updatedRole: Role) => {
-        setRoleData(prev => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
-        setIsEditModalOpen(false);
-        setRoleToEdit(null);
+    const { profile } = useAuth();
+    const isSuperAdmin = profile?.role === 'Super Admin';
+    const [syncing, setSyncing] = useState(false);
+    const [syncMessage, setSyncMessage] = useState('');
+
+    const fetchRoles = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await getRoles();
+            setRoleData(data);
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch roles.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchRoles();
+    }, [fetchRoles]);
+
+    const handleUpdateRole = async (updatedRole: Role) => {
+        setError(null);
+        try {
+            await updateRole(updatedRole.id, { name: updatedRole.name });
+            await fetchRoles();
+            setIsEditModalOpen(false);
+            setRoleToEdit(null);
+        } catch (err: any) {
+            setError(err.message || 'Failed to update role.');
+        }
     };
     
+    const handleAddRole = async (name: string, school_id?: number) => {
+        setError(null);
+        try {
+            await addRole({ name, school_id });
+            await fetchRoles();
+            setActiveTab('list');
+        } catch (err: any) {
+            setError(err.message || 'Failed to add role.');
+        }
+    };
+
     const handleEditClick = (role: Role) => {
+        if (role.is_system_role) {
+            alert("System roles cannot be edited.");
+            return;
+        }
         setRoleToEdit(role);
         setIsEditModalOpen(true);
+    };
+
+    const handleSyncRoles = async () => {
+        if (!window.confirm('This will check all schools and create any missing default roles. Continue?')) {
+            return;
+        }
+        setSyncing(true);
+        setSyncMessage('');
+        setError(null);
+        try {
+            const result = await syncDefaultRolesForAllSchools();
+            setSyncMessage(`${result.created} missing default roles were created successfully.`);
+            await fetchRoles(); // Refresh the list
+        } catch (err: any) {
+            setError(err.message || 'Failed to sync roles.');
+        } finally {
+            setSyncing(false);
+            setTimeout(() => setSyncMessage(''), 5000); // Clear message after 5s
+        }
     };
 
     const TabButton = ({ label, tabName }: { label: string; tabName: string }) => {
@@ -91,38 +153,37 @@ const RolePermissionPage = () => {
 
     const RoleList = () => (
         <div>
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <div className="flex items-center gap-2">
-                    <select className="px-2 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-900 dark:border-gray-600 text-sm">
-                        <option>25</option>
-                        <option>50</option>
-                        <option>100</option>
-                    </select>
-                    <span className="text-sm text-text-secondary dark:text-gray-400">rows per page</span>
-                </div>
-                <div className="relative">
-                    <input type="text" placeholder="Search..." className="pl-4 pr-10 py-2 w-full md:w-64 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-900 dark:border-gray-600 dark:text-white" />
-                    <svg className="h-5 w-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                </div>
-            </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
                     <thead className="bg-gray-100 dark:bg-gray-700/50">
                         <tr>
-                            {['SI', 'Role Name', 'System Role', 'Action'].map(head => (
-                                <th key={head} className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">{head}</th>
-                            ))}
+                            <th className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase">SI</th>
+                            {isSuperAdmin && <th className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase">School</th>}
+                            <th className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase">Role Name</th>
+                            <th className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase">Type</th>
+                            <th className="p-3 font-semibold text-sm text-text-secondary dark:text-gray-300 uppercase">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {roleData.map((item, index) => (
                             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                                 <td className="p-3 text-sm text-text-secondary dark:text-gray-400">{index + 1}</td>
+                                {isSuperAdmin && <td className="p-3 text-sm text-text-secondary dark:text-gray-400">{item.schools?.name || 'N/A'}</td>}
                                 <td className="p-3 text-sm font-medium text-text-primary dark:text-gray-200">{item.name}</td>
-                                <td className="p-3 text-sm text-text-secondary dark:text-gray-400">{item.isSystemRole ? 'Yes' : 'No'}</td>
+                                <td className="p-3 text-sm">
+                                    {item.is_system_role ? (
+                                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+                                            System
+                                        </span>
+                                    ) : (
+                                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                            Custom
+                                        </span>
+                                    )}
+                                </td>
                                 <td className="p-3">
                                     <div className="flex space-x-2 items-center">
-                                        <button onClick={() => handleEditClick(item)} className="p-1.5 rounded-md bg-gray-200 dark:bg-gray-600 hover:opacity-80 transition-opacity" aria-label="Edit">{ICONS.edit}</button>
+                                        <button onClick={() => handleEditClick(item)} disabled={item.is_system_role} className="p-1.5 rounded-md bg-gray-200 dark:bg-gray-600 hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Edit">{ICONS.edit}</button>
                                         <Link to={`/system-settings/role-permission/${item.id}`} state={{ roleName: item.name }} className="flex items-center px-3 py-1.5 text-sm font-semibold rounded-md bg-gray-200 dark:bg-gray-600 text-primary hover:opacity-80 transition-opacity">
                                             {ICONS.permission}
                                             Permission
@@ -134,29 +195,54 @@ const RolePermissionPage = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="flex flex-col md:flex-row justify-end items-center mt-6 text-sm text-text-secondary dark:text-gray-400">
-                <div className="flex items-center space-x-1">
-                    <button className="px-3 py-1 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50">&lt;</button>
-                    <button className="px-3 py-1 border rounded-md bg-primary text-white">1</button>
-                    <button className="px-3 py-1 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50">&gt;</button>
-                </div>
-            </div>
         </div>
     );
 
-    const CreateRoleForm = () => (
-        <form className="space-y-6 max-w-lg mx-auto">
-             <div className="space-y-1">
-                <label htmlFor="role_name" className="text-sm text-text-secondary dark:text-gray-300">Role Name <span className="text-primary">*</span></label>
-                <input type="text" id="role_name" className="form-input w-full" />
-            </div>
-            <div className="pt-6 flex justify-center">
-                <button type="submit" className="flex items-center px-6 py-2 bg-primary text-white rounded-md font-semibold hover:bg-primary-hover">
-                    {ICONS.save} Save
-                </button>
-            </div>
-        </form>
-    );
+    const CreateRoleForm = () => {
+        const [name, setName] = useState('');
+        const [selectedSchool, setSelectedSchool] = useState('');
+        const [schools, setSchools] = useState<School[]>([]);
+        const [loadingSchools, setLoadingSchools] = useState(isSuperAdmin);
+
+        useEffect(() => {
+            if (isSuperAdmin) {
+                getSchools().then(data => {
+                    setSchools(data);
+                    setLoadingSchools(false);
+                });
+            }
+        }, [isSuperAdmin]);
+
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            handleAddRole(name, isSuperAdmin ? parseInt(selectedSchool) : undefined);
+            setName('');
+            setSelectedSchool('');
+        };
+
+        return (
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
+                 {isSuperAdmin && (
+                    <div className="space-y-1">
+                        <label htmlFor="school_id" className="text-sm text-text-secondary dark:text-gray-300">School <span className="text-primary">*</span></label>
+                        <select id="school_id" value={selectedSchool} onChange={e => setSelectedSchool(e.target.value)} className="form-input" required disabled={loadingSchools}>
+                            <option value="">{loadingSchools ? 'Loading...' : 'Select a school'}</option>
+                            {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                    </div>
+                 )}
+                 <div className="space-y-1">
+                    <label htmlFor="role_name" className="text-sm text-text-secondary dark:text-gray-300">Role Name <span className="text-primary">*</span></label>
+                    <input type="text" id="role_name" value={name} onChange={e => setName(e.target.value)} className="form-input w-full" required />
+                </div>
+                <div className="pt-6 flex justify-center">
+                    <button type="submit" className="flex items-center px-6 py-2 bg-primary text-white rounded-md font-semibold hover:bg-primary-hover">
+                        {ICONS.save} Save
+                    </button>
+                </div>
+            </form>
+        );
+    };
 
     return (
         <DashboardLayout title="Roles">
@@ -167,13 +253,25 @@ const RolePermissionPage = () => {
                 role={roleToEdit}
             />
             <div className="bg-card dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md">
-                <div className="border-b dark:border-gray-700 mb-6">
+                <div className="border-b dark:border-gray-700 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <nav className="flex space-x-6 -mb-px">
                         <TabButton label="Role List" tabName="list" />
                         <TabButton label="Create Role" tabName="add" />
                     </nav>
+                    {isSuperAdmin && activeTab === 'list' && (
+                        <button
+                            onClick={handleSyncRoles}
+                            disabled={syncing}
+                            className="flex items-center px-4 py-2 text-sm font-semibold rounded-md bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-70 transition-colors"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${syncing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 12a8.956 8.956 0 01-2.93 6.653 8.956 8.956 0 01-6.653 2.93m0 0V20m0-8a8.956 8.956 0 016.653-2.93A8.956 8.956 0 0120 12m0 0h-5m-5 0a8.956 8.956 0 01-2.93-6.653A8.956 8.956 0 0112 4m0 0v5m-5 0H4" /></svg>
+                            {syncing ? 'Syncing...' : 'Sync Default Roles'}
+                        </button>
+                    )}
                 </div>
-                {activeTab === 'list' ? <RoleList /> : <CreateRoleForm />}
+                {error && <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">{error}</div>}
+                {syncMessage && <div className="bg-blue-100 text-blue-700 p-3 rounded-md mb-4">{syncMessage}</div>}
+                {loading ? <div className="text-center py-8">Loading roles...</div> : (activeTab === 'list' ? <RoleList /> : <CreateRoleForm />)}
             </div>
              <style>{`
                 .form-input {
@@ -181,6 +279,7 @@ const RolePermissionPage = () => {
                     border-radius: 0.375rem;
                     border: 1px solid;
                     background-color: transparent;
+                    width: 100%;
                     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
                 }
                 html.dark .form-input {
