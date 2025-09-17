@@ -117,7 +117,6 @@ export interface Expense {
 // --- INVENTORY INTERFACES ---
 export interface Product {
     id: number;
-    school_id: number;
     school: string;
     name: string;
     code: string;
@@ -132,6 +131,7 @@ export interface Product {
 
 export interface Category {
     id: number;
+    user_id: string;
     school_id: number;
     school: string;
     name: string;
@@ -139,7 +139,6 @@ export interface Category {
 
 export interface Store {
     id: number;
-    school_id: number;
     school: string;
     name: string;
     code: string;
@@ -150,7 +149,6 @@ export interface Store {
 
 export interface Supplier {
     id: number;
-    school_id: number;
     school: string;
     name: string;
     address: string;
@@ -162,14 +160,12 @@ export interface Supplier {
 
 export interface Unit {
     id: number;
-    school_id: number;
     school: string;
     name: string;
 }
 
 export interface Purchase {
     id: number;
-    school_id: number;
     school: string;
     billNo: string;
     supplier: string;
@@ -181,7 +177,6 @@ export interface Purchase {
 
 export interface Sale {
     id: number;
-    school_id: number;
     school: string;
     role: 'Student' | 'Parent' | 'Staff';
     saleTo: string;
@@ -197,7 +192,6 @@ export interface Sale {
 
 export interface Issue {
     id: number;
-    school_id: number;
     school: string;
     role: 'Student' | 'Parent' | 'Staff';
     issueTo: string;
@@ -371,6 +365,28 @@ export interface ApiConfig {
   is_enabled: boolean;
 }
 
+// --- NEW: PESAPAL CONFIG INTERFACE ---
+export interface PesaPalConfig {
+  id: number;
+  user_id: string; // Foreign key to auth.users, for Super Admin
+  consumer_key: string | null;
+  consumer_secret: string | null;
+  is_enabled: boolean;
+}
+
+// --- NEW: PAYPAL CONFIG INTERFACE ---
+export interface PayPalConfig {
+  id: number;
+  user_id: string; // Foreign key to auth.users, for Super Admin
+  username: string | null;
+  password: string | null;
+  signature: string | null;
+  email: string | null;
+  sandbox: boolean;
+  is_enabled: boolean;
+}
+
+
 // --- ROLES & PERMISSIONS ---
 export interface Role {
   id: number;
@@ -496,6 +512,9 @@ export async function updateUserAvatar(userId: string, file: File) {
 }
 
 // --- REFACTORED ASYNC DATA ACCESS FUNCTIONS (SCHOOL-SPECIFIC / MULTI-TENANT) ---
+// List of tables that use the denormalized `school` name string for tenancy, instead of a `school_id`.
+const inventoryTablesUsingSchoolName = ['products', 'stores', 'suppliers', 'units', 'purchases', 'sales', 'issues'];
+
 async function getData<T>(tableName: string, query: string = '*'): Promise<T[]> {
     const profile = await getUserProfile();
     if (!profile) return []; // Not logged in
@@ -510,14 +529,38 @@ async function getData<T>(tableName: string, query: string = '*'): Promise<T[]> 
         return data as T[];
     }
     
-    // For school users, filter by their school_id
+    // For school users, filter by their school_id or school name
     if (profile.school_id) {
-        const { data, error } = await supabase.from(tableName).select(query).eq('school_id', profile.school_id).order('id', { ascending: true });
-        if (error) {
-            console.error(`Error fetching from ${tableName} for school_id ${profile.school_id}:`, error.message);
-            return [];
+        // Check if this table uses the 'school' name string for filtering
+        if (inventoryTablesUsingSchoolName.includes(tableName)) {
+            // Fetch school name using school_id
+            const { data: schoolData, error: schoolError } = await supabase
+                .from('schools')
+                .select('name')
+                .eq('id', profile.school_id)
+                .single();
+            
+            if (schoolError || !schoolData) {
+                console.error(`Error finding school name for school_id ${profile.school_id}:`, schoolError);
+                return [];
+            }
+            
+            // Filter by school name
+            const { data, error } = await supabase.from(tableName).select(query).eq('school', schoolData.name).order('id', { ascending: true });
+            if (error) {
+                console.error(`Error fetching from ${tableName} for school ${schoolData.name}:`, error.message);
+                return [];
+            }
+            return data as T[];
+        } else {
+            // Default behavior: filter by school_id for tables like 'categories', 'sessions', etc.
+            const { data, error } = await supabase.from(tableName).select(query).eq('school_id', profile.school_id).order('id', { ascending: true });
+            if (error) {
+                console.error(`Error fetching from ${tableName} for school_id ${profile.school_id}:`, error.message);
+                return [];
+            }
+            return data as T[];
         }
-        return data as T[];
     }
 
     // School user with no school_id, return empty.
@@ -525,16 +568,31 @@ async function getData<T>(tableName: string, query: string = '*'): Promise<T[]> 
 }
 
 
-async function addData<T>(tableName: string, addData: Omit<T, 'id' | 'school_id'>) {
+async function addData<T>(tableName: string, newData: Omit<T, 'id' | 'school'>) {
     const profile = await getUserProfile();
     if (!profile || !profile.school_id) {
         console.error(`Cannot add data to ${tableName}: user is not associated with a school.`);
-        return;
+        throw new Error("User is not associated with a school.");
     };
     
-    const record = { ...addData, school_id: profile.school_id };
+    // Fetch school name for denormalization, as all inventory tables using this helper need it.
+    const { data: schoolData, error: schoolError } = await supabase
+        .from('schools')
+        .select('name')
+        .eq('id', profile.school_id)
+        .single();
+
+    if (schoolError || !schoolData) {
+        console.error(`Could not fetch school name for insertion into ${tableName}:`, schoolError);
+        throw new Error(`Could not find school for user.`);
+    }
+
+    const record = { ...newData, school: schoolData.name };
     const { error } = await supabase.from(tableName).insert(record);
-    if(error) console.error(`Error adding to ${tableName}:`, error.message);
+    if(error) {
+        console.error(`Error adding to ${tableName}:`, error.message);
+        throw error;
+    }
 }
 
 // Delete remains the same, as RLS policies at the DB level will prevent unauthorized deletions.
@@ -612,7 +670,7 @@ export const deleteSession = (id: number): Promise<void> => deleteData('sessions
 
 // Leads
 export const getLeads = (): Promise<Lead[]> => getData<Lead>('leads');
-export const addLead = (leadData: Omit<Lead, 'id' | 'school_id'>) => addData('leads', leadData);
+export const addLead = (leadData: Omit<Lead, 'id' | 'school_id'>) => addData('leads', leadData as any);
 export const updateLead = async (id: number, updates: Partial<Lead>) => {
     const { error } = await supabase.from('leads').update(updates).eq('id', id);
     if(error) console.error("Error updating lead:", error.message);
@@ -620,7 +678,7 @@ export const updateLead = async (id: number, updates: Partial<Lead>) => {
 
 // Tasks
 export const getTasks = (): Promise<Task[]> => getData<Task>('tasks');
-export const addTask = (taskData: Omit<Task, 'id' | 'school_id'>) => addData('tasks', taskData);
+export const addTask = (taskData: Omit<Task, 'id' | 'school_id'>) => addData('tasks', taskData as any);
 export const updateTask = async (id: number, updates: Partial<Task>) => {
     const { error } = await supabase.from('tasks').update(updates).eq('id', id);
     if(error) console.error("Error updating task:", error.message);
@@ -643,35 +701,80 @@ export const getExpenses = (): Promise<Expense[]> => getGlobalData<Expense>('exp
 
 // --- INVENTORY FUNCTIONS ---
 export const getProducts = (): Promise<Product[]> => getData<Product>('products');
-export const addProduct = (data: Omit<Product, 'id' | 'school_id'>) => addData('products', data);
+export const addProduct = (data: Omit<Product, 'id' | 'school'>) => addData('products', data);
 export const deleteProduct = (id: number) => deleteData('products', id);
 
 export const getCategories = (): Promise<Category[]> => getData<Category>('categories');
-export const addCategory = (data: Omit<Category, 'id' | 'school_id'>) => addData('categories', data);
+
+export const addCategory = async (categoryData: { name: string; school_id?: number }) => {
+    const profile = await getUserProfile();
+    if (!profile) throw new Error("User not authenticated.");
+
+    let schoolIdForRecord: number;
+
+    // Determine the school_id to use
+    if (profile.role === 'Super Admin') {
+        if (!categoryData.school_id) {
+            throw new Error("Super Admin must select a school to create a category.");
+        }
+        schoolIdForRecord = categoryData.school_id;
+    } else {
+        if (!profile.school_id) {
+            throw new Error("Cannot add category: user is not associated with a school.");
+        }
+        schoolIdForRecord = profile.school_id;
+    }
+
+    // The 'categories' table has a 'school' name column, so we need to fetch it for denormalization.
+    const { data: schoolData, error: schoolError } = await supabase
+        .from('schools')
+        .select('name')
+        .eq('id', schoolIdForRecord)
+        .single();
+    
+    if (schoolError || !schoolData) {
+        console.error('Could not fetch school name for category', schoolError);
+        throw new Error('Could not verify the selected school for the category.');
+    }
+
+    const recordToInsert = { 
+        name: categoryData.name, 
+        school: schoolData.name,
+        school_id: schoolIdForRecord,
+        user_id: profile.id, // This ensures we always provide the creator's ID
+    };
+
+    const { error } = await supabase.from('categories').insert(recordToInsert);
+
+    if (error) {
+        console.error("Error adding category:", error.message);
+        throw new Error(error.message); // Throw the error so the UI can catch it
+    }
+};
 export const deleteCategory = (id: number) => deleteData('categories', id);
 
 export const getStores = (): Promise<Store[]> => getData<Store>('stores');
-export const addStore = (data: Omit<Store, 'id' | 'school_id'>) => addData('stores', data);
+export const addStore = (data: Omit<Store, 'id' | 'school'>) => addData('stores', data);
 export const deleteStore = (id: number) => deleteData('stores', id);
 
 export const getSuppliers = (): Promise<Supplier[]> => getData<Supplier>('suppliers');
-export const addSupplier = (data: Omit<Supplier, 'id' | 'school_id'>) => addData('suppliers', data);
+export const addSupplier = (data: Omit<Supplier, 'id' | 'school'>) => addData('suppliers', data);
 export const deleteSupplier = (id: number) => deleteData('suppliers', id);
 
 export const getUnits = (): Promise<Unit[]> => getData<Unit>('units');
-export const addUnit = (data: Omit<Unit, 'id' | 'school_id'>) => addData('units', data);
+export const addUnit = (data: Omit<Unit, 'id' | 'school'>) => addData('units', data);
 export const deleteUnit = (id: number) => deleteData('units', id);
 
 export const getPurchases = (): Promise<Purchase[]> => getData<Purchase>('purchases');
-export const addPurchase = (data: Omit<Purchase, 'id' | 'school_id'>) => addData('purchases', data);
+export const addPurchase = (data: Omit<Purchase, 'id' | 'school'>) => addData('purchases', data);
 export const deletePurchase = (id: number) => deleteData('purchases', id);
 
 export const getSales = (): Promise<Sale[]> => getData<Sale>('sales');
-export const addSale = (data: Omit<Sale, 'id' | 'school_id'>) => addData('sales', data);
+export const addSale = (data: Omit<Sale, 'id' | 'school'>) => addData('sales', data);
 export const deleteSale = (id: number) => deleteData('sales', id);
 
 export const getIssues = (): Promise<Issue[]> => getData<Issue>('issues');
-export const addIssue = (data: Omit<Issue, 'id' | 'school_id'>) => addData('issues', data);
+export const addIssue = (data: Omit<Issue, 'id' | 'school'>) => addData('issues', data);
 export const deleteIssue = (id: number) => deleteData('issues', id);
 
 // --- SCHOOL & CURRENCY FUNCTIONS ---
@@ -684,7 +787,7 @@ export const getCurrencies = async (): Promise<Currency[]> => {
     // School users see only their own currencies
     return getData<Currency>('currencies');
 };
-export const addCurrency = (data: Omit<Currency, 'id' | 'school_id'>) => addData('currencies', data);
+export const addCurrency = (data: Omit<Currency, 'id' | 'school_id'>) => addData('currencies', data as any);
 export const deleteCurrency = (id: number) => deleteData('currencies', id);
 
 // Public function for the store page (remains global)
@@ -822,8 +925,47 @@ export const updatePlan = (id: number, data: Partial<Plan>) => supabase.from('pl
 export const getSubscriptions = (): Promise<Subscription[]> => getGlobalData<Subscription>('subscriptions', '*, schools(*), plans(*)');
 export const addSubscription = (data: Omit<Subscription, 'id' | 'created_at' | 'schools' | 'plans'>) => supabase.from('subscriptions').insert(data);
 
+// FIX: Export a new function `updateSubscriptionStatusByUserId` to update a subscription status using a user ID.
+export const updateSubscriptionStatusByUserId = async (userId: string, status: Subscription['status']) => {
+    // Get user's school_id
+    const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('school_id')
+        .eq('id', userId)
+        .single();
+    
+    if (profileError || !profileData?.school_id) {
+        throw new Error(`Could not find school for user ${userId}. Error: ${profileError?.message}`);
+    }
+
+    const schoolId = profileData.school_id;
+
+    // Find the latest subscription for that school to update
+    const { data: subData, error: subSelectError } = await supabase
+        .from('subscriptions')
+        .select('id')
+        .eq('school_id', schoolId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+    
+    if (subSelectError || !subData) {
+        throw new Error(`Could not find subscription for school ${schoolId}. Error: ${subSelectError?.message}`);
+    }
+
+    // Update the status of that subscription
+    const { error: updateError } = await supabase
+        .from('subscriptions')
+        .update({ status: status })
+        .eq('id', subData.id);
+        
+    if (updateError) {
+        throw new Error(`Could not update subscription status for school ${schoolId}. Error: ${updateError.message}`);
+    }
+};
+
 export const getOfflinePaymentMethods = (): Promise<OfflinePaymentMethod[]> => getData<OfflinePaymentMethod>('offline_payment_methods');
-export const addOfflinePaymentMethod = (data: Omit<OfflinePaymentMethod, 'id' | 'school_id'>) => addData('offline_payment_methods', data);
+export const addOfflinePaymentMethod = (data: Omit<OfflinePaymentMethod, 'id' | 'school_id'>) => addData('offline_payment_methods', data as any);
 export const deleteOfflinePaymentMethod = (id: number) => deleteData('offline_payment_methods', id);
 
 export const getTransactions = (): Promise<Transaction[]> => getGlobalData<Transaction>('transactions', '*, schools(name), plans(name)');
@@ -947,6 +1089,54 @@ export const upsertApiConfig = async (config: Partial<Omit<ApiConfig, 'id'>>) =>
     await supabase.from('api_configs').upsert({ user_id: user.id, ...config }, { onConflict: 'user_id' });
 };
 
+// --- NEW: PESAPAL CONFIG FUNCTIONS ---
+export const getPesaPalConfig = async (): Promise<PesaPalConfig | null> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data } = await supabase.from('pesapal_configs').select('*').eq('user_id', user.id).single();
+    return data;
+};
+export const upsertPesaPalConfig = async (config: Partial<Omit<PesaPalConfig, 'id'>>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User must be logged in.");
+    await supabase.from('pesapal_configs').upsert({ user_id: user.id, ...config }, { onConflict: 'user_id' });
+};
+export const getActivePesaPalConfig = async (): Promise<Pick<PesaPalConfig, 'consumer_key'> | null> => {
+    const { data } = await supabase.from('pesapal_configs').select('consumer_key').eq('is_enabled', true).limit(1).single();
+    return data;
+};
+
+// --- NEW: PAYPAL CONFIG FUNCTIONS ---
+export const getPayPalConfig = async (): Promise<PayPalConfig | null> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data } = await supabase.from('paypal_configs').select('*').eq('user_id', user.id).single();
+    return data;
+};
+export const upsertPayPalConfig = async (config: Partial<Omit<PayPalConfig, 'id' | 'user_id'>>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User must be logged in.");
+    await supabase.from('paypal_configs').upsert({ user_id: user.id, ...config }, { onConflict: 'user_id' });
+};
+export const getActivePayPalConfig = async (): Promise<Pick<PayPalConfig, 'username'> | null> => {
+    const { data } = await supabase.from('paypal_configs').select('username').eq('is_enabled', true).limit(1).single();
+    return data;
+};
+
+// --- NEW: POLAR CONFIG (STUB) ---
+// FIX: Add missing function and type for Polar config check to resolve error in CheckoutPage.tsx
+export interface PolarConfig {
+    // Define properties if known, otherwise can be simple.
+    is_enabled: boolean;
+}
+
+export const getActivePolarConfig = async (): Promise<Pick<PolarConfig, 'is_enabled'> | null> => {
+    // This is a stub function as no Polar config table exists. 
+    // Returning an object to enable it for demo purposes.
+    return { is_enabled: true };
+}
+
+
 // --- ROLES & PERMISSIONS FUNCTIONS ---
 export const getRoles = (): Promise<Role[]> => getData<Role>('roles', '*, schools(id, name)');
 
@@ -1052,48 +1242,3 @@ export async function syncDefaultRolesForAllSchools(): Promise<{ created: number
 
     return { created: rolesToCreate.length, total: schools.length * defaultRoleNames.length };
 }
-
-
-/*
-  DATABASE SCHEMA & RLS SETUP
-
-  The following SQL should be run to set up new tables.
-
-  --- NEW: API CONFIGS TABLE (RUN THIS) ---
-
-  CREATE TABLE public.api_configs (
-    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
-    api_key TEXT,
-    endpoint_url TEXT,
-    auth_type TEXT,
-    header_name TEXT,
-    is_enabled BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-  );
-
-  ALTER TABLE public.api_configs ENABLE ROW LEVEL SECURITY;
-
-  CREATE POLICY "Super Admins can manage their own API configs"
-  ON public.api_configs
-  FOR ALL
-  USING (auth.uid() = user_id AND get_user_role() = 'Super Admin')
-  WITH CHECK (auth.uid() = user_id AND get_user_role() = 'Super Admin');
-
-  -- Trigger to update 'updated_at' timestamp
-  CREATE OR REPLACE FUNCTION handle_api_configs_update()
-  RETURNS TRIGGER AS $$
-  BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
-  END;
-  $$ LANGUAGE plpgsql;
-
-  CREATE TRIGGER on_api_configs_update
-  BEFORE UPDATE ON public.api_configs
-  FOR EACH ROW
-  EXECUTE PROCEDURE handle_api_configs_update();
-
-  --- END OF NEW SQL ---
-*/

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import DashboardHeader from './DashboardHeader';
 import { supabase } from '../supabase';

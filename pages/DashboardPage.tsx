@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar, BarChart, Bar } from 'recharts';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../App';

@@ -1,6 +1,9 @@
 
-import React, { useState } from 'react';
+
+
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
+import { getPesaPalConfig, upsertPesaPalConfig, PesaPalConfig, getPayPalConfig, upsertPayPalConfig, PayPalConfig } from '../../db';
 
 // --- ICONS ---
 const icons = {
@@ -50,6 +53,18 @@ const TextareaInput = ({ ...props }) => (
     />
 );
 
+const ToggleSwitch = ({ enabled, setEnabled }: { enabled: boolean, setEnabled: (enabled: boolean) => void }) => (
+    <button
+        type="button"
+        className={`${enabled ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'} relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-gray-800`}
+        role="switch"
+        aria-checked={enabled}
+        onClick={() => setEnabled(!enabled)}
+    >
+        <span className={`${enabled ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 transform bg-white rounded-full transition-transform`} />
+    </button>
+);
+
 // --- Settings Panels ---
 const GeneralSettingsPanel = () => (
     <form>
@@ -89,9 +104,81 @@ const GeneralSettingsPanel = () => (
 );
 
 const PaymentSettingsPanel = () => {
-    const [activeGateway, setActiveGateway] = useState('paypal');
-    const gateways = ['Paypal Config', 'Stripe Config', 'PayUmoney Config', 'Paystack', 'Razorpay', 'Midtrans', 'SSLCommerz', 'Jazzcash', 'Flutter Wave'];
-    const activeGateways = ['Paypal', 'Stripe', 'PayUmoney', 'Paystack', 'Razorpay', 'Midtrans', 'SSLCommerz', 'Jazzcash', 'Flutter Wave', 'Paytm', 'toyibuPay', 'Payhere'];
+    const [activeGateway, setActiveGateway] = useState('paypalconfig');
+    const gateways = ['Paypal Config', 'Stripe Config', 'PayUmoney Config', 'Paystack', 'Razorpay', 'Midtrans', 'SSLCommerz', 'Jazzcash', 'Flutter Wave', 'PesaPal'];
+    const activeGateways = ['Paypal', 'Stripe', 'PayUmoney', 'Paystack', 'Razorpay', 'Midtrans', 'SSLCommerz', 'Jazzcash', 'Flutter Wave', 'Paytm', 'toyibuPay', 'Payhere', 'PesaPal'];
+    
+    // Config states
+    const [pesapalConfig, setPesapalConfig] = useState<Partial<PesaPalConfig>>({});
+    const [paypalConfig, setPaypalConfig] = useState<Partial<PayPalConfig>>({});
+    
+    // Loading states
+    const [loadingPesapal, setLoadingPesapal] = useState(true);
+    const [loadingPaypal, setLoadingPaypal] = useState(true);
+
+    // Active Gateway states
+    const [activeGatewayStates, setActiveGatewayStates] = useState<Record<string, boolean>>({});
+    const [loadingActiveGateways, setLoadingActiveGateways] = useState(true);
+
+
+    useEffect(() => {
+        const fetchConfigs = async () => {
+            setLoadingActiveGateways(true);
+            setLoadingPesapal(true);
+            setLoadingPaypal(true);
+
+            const pesapalCfg = await getPesaPalConfig();
+            if (pesapalCfg) {
+                setPesapalConfig(pesapalCfg);
+                setActiveGatewayStates(s => ({ ...s, PesaPal: pesapalCfg.is_enabled }));
+            }
+            setLoadingPesapal(false);
+
+            const paypalCfg = await getPayPalConfig();
+            if (paypalCfg) {
+                setPaypalConfig(paypalCfg);
+                 setActiveGatewayStates(s => ({ ...s, Paypal: paypalCfg.is_enabled }));
+            }
+            setLoadingPaypal(false);
+
+            setLoadingActiveGateways(false);
+        };
+        fetchConfigs();
+    }, []);
+
+    const handleSavePesapal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await upsertPesaPalConfig(pesapalConfig);
+        alert('PesaPal settings saved!');
+    };
+    
+    const handleSavePaypal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await upsertPayPalConfig(paypalConfig);
+        alert('PayPal settings saved!');
+    };
+    
+    const handleActiveGatewayChange = (gateway: string, isEnabled: boolean) => {
+        setActiveGatewayStates(prev => ({ ...prev, [gateway]: isEnabled }));
+    };
+
+    const handleSaveActiveGateways = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            if (activeGatewayStates.hasOwnProperty('Paypal')) {
+                await upsertPayPalConfig({ ...paypalConfig, is_enabled: activeGatewayStates['Paypal'] });
+            }
+            if (activeGatewayStates.hasOwnProperty('PesaPal')) {
+                await upsertPesaPalConfig({ ...pesapalConfig, is_enabled: activeGatewayStates['PesaPal'] });
+            }
+            // Add other gateways with config tables here in the future
+            alert('Active gateways saved!');
+        } catch (err) {
+            alert('Error saving active gateways.');
+            console.error(err);
+        }
+    };
+
 
     const TabButton = ({ name }: { name: string }) => (
         <button
@@ -110,30 +197,100 @@ const PaymentSettingsPanel = () => {
                             {gateways.map(g => <TabButton key={g} name={g} />)}
                         </nav>
                      </div>
-                     <form className="space-y-4">
-                        <FormField label="Paypal Username"><TextInput defaultValue="sandbo_1215252412_biz_api1.angelleye.com" /></FormField>
-                        <FormField label="Paypal Password"><TextInput type="password" defaultValue="1215252412" /></FormField>
-                        <FormField label="Paypal Signature"><TextInput defaultValue="AIzZEPLIscC-F-P-i-L2FkE6B-mLAIH2EEPLjjSicc.2M-W5yMw31sBv" /></FormField>
-                        <FormField label="Paypal Email"><TextInput defaultValue="example@gmail.com" /></FormField>
-                         <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
-                            <span className="md:col-start-2 md:col-span-2 flex items-center">
-                                <input id="paypal_sandbox" type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
-                                <label htmlFor="paypal_sandbox" className="ml-2 text-sm text-gray-600 dark:text-gray-400">Paypal Sandbox</label>
-                            </span>
-                        </div>
-                        <div className="pt-6 flex justify-end">
-                            <button type="submit" className="inline-flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover">{icons.save} Save</button>
-                        </div>
-                     </form>
+                     
+                     {activeGateway === 'paypalconfig' && (
+                         <form onSubmit={handleSavePaypal} className="space-y-4">
+                            {loadingPaypal ? <p>Loading PayPal settings...</p> : (
+                                <>
+                                    <FormField label="Paypal Username">
+                                        <TextInput
+                                            value={paypalConfig.username || ''}
+                                            onChange={(e) => setPaypalConfig(c => ({...c, username: e.target.value}))}
+                                            placeholder="Your PayPal API Username"
+                                        />
+                                    </FormField>
+                                    <FormField label="Paypal Password">
+                                        <TextInput
+                                            type="password"
+                                            value={paypalConfig.password || ''}
+                                            onChange={(e) => setPaypalConfig(c => ({...c, password: e.target.value}))}
+                                            placeholder="Your PayPal API Password"
+                                        />
+                                    </FormField>
+                                    <FormField label="Paypal Signature">
+                                        <TextInput
+                                            value={paypalConfig.signature || ''}
+                                            onChange={(e) => setPaypalConfig(c => ({...c, signature: e.target.value}))}
+                                            placeholder="Your PayPal API Signature"
+                                        />
+                                    </FormField>
+                                    <FormField label="Paypal Email">
+                                        <TextInput
+                                            type="email"
+                                            value={paypalConfig.email || ''}
+                                            onChange={(e) => setPaypalConfig(c => ({...c, email: e.target.value}))}
+                                            placeholder="Your PayPal Email"
+                                        />
+                                    </FormField>
+                                    <FormField label="Paypal Sandbox">
+                                        <ToggleSwitch
+                                            enabled={paypalConfig.sandbox || false}
+                                            setEnabled={(val) => setPaypalConfig(c => ({...c, sandbox: val}))}
+                                        />
+                                    </FormField>
+                                    <div className="pt-6 flex justify-end">
+                                        <button type="submit" className="inline-flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover">{icons.save} Save</button>
+                                    </div>
+                                </>
+                            )}
+                         </form>
+                     )}
+
+                    {activeGateway === 'pesapal' && (
+                        <form onSubmit={handleSavePesapal} className="space-y-4">
+                            {loadingPesapal ? <p>Loading PesaPal settings...</p> : (
+                                <>
+                                    <FormField label="Consumer Key">
+                                        <TextInput 
+                                            value={pesapalConfig.consumer_key || ''} 
+                                            onChange={(e) => setPesapalConfig(c => ({...c, consumer_key: e.target.value}))}
+                                            placeholder="Your PesaPal Consumer Key"
+                                        />
+                                    </FormField>
+                                    <FormField label="Consumer Secret">
+                                        <TextInput 
+                                            type="password"
+                                            value={pesapalConfig.consumer_secret || ''} 
+                                            onChange={(e) => setPesapalConfig(c => ({...c, consumer_secret: e.target.value}))}
+                                            placeholder="Your PesaPal Consumer Secret"
+                                        />
+                                    </FormField>
+                                    <div className="pt-6 flex justify-end">
+                                        <button 
+                                            type="submit"
+                                            className="inline-flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover"
+                                        >
+                                            {icons.save} Save PesaPal Settings
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </form>
+                    )}
+                    
+                    {!['paypalconfig', 'pesapal'].includes(activeGateway) && <p className="text-center text-gray-500 py-8">Configuration for {activeGateway} is not implemented.</p>}
                  </div>
             </div>
             <div className="lg:col-span-1">
                  <div className="bg-card dark:bg-gray-800 p-6 rounded-lg shadow-md">
                     <h3 className="text-lg font-semibold text-text-primary dark:text-gray-100 mb-4">Active Gateway</h3>
-                    <form className="space-y-3">
-                        {activeGateways.map(g => (
+                    <form className="space-y-3" onSubmit={handleSaveActiveGateways}>
+                        {loadingActiveGateways ? <p>Loading...</p> : activeGateways.map(g => (
                              <div key={g} className="flex items-center">
-                                <input id={g} type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" defaultChecked={['Paypal', 'Stripe', 'Razorpay', 'Midtrans'].includes(g)} />
+                                <input id={g} type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                    checked={activeGatewayStates[g] || false}
+                                    onChange={(e) => handleActiveGatewayChange(g, e.target.checked)}
+                                />
                                 <label htmlFor={g} className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">{g}</label>
                             </div>
                         ))}
@@ -252,7 +409,7 @@ const EmailSettingsPanel = () => {
 
 // --- Main Subscription Settings Page Component ---
 const SubscriptionSettingsPage = () => {
-    const [activePanel, setActivePanel] = useState('general');
+    const [activePanel, setActivePanel] = useState('payment');
 
     const renderPanel = () => {
         switch (activePanel) {

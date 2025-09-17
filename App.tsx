@@ -1,8 +1,9 @@
 
 
+
 import React, { useState, useContext, createContext, PropsWithChildren, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { supabase, type User, type Session } from './supabase';
 import { ThemeProvider } from './components/ThemeProvider';
 import { CartProvider } from './components/CartContext';
@@ -46,6 +47,9 @@ import TermsOfServicePage from './pages/TermsOfServicePage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import CompanyDashboardPage from './pages/CompanyDashboardPage';
 import SuperAdminLandingPage from './pages/SuperAdminLandingPage';
+import PesaPalCheckoutPage from './pages/PesaPalCheckoutPage';
+import PolarCheckoutPage from './pages/PolarCheckoutPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 
 // Inventory Pages
 import ProductPage from './pages/inventory/ProductPage';
@@ -469,6 +473,9 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
               <Route path="/subscription-success" element={<SubscriptionSuccessPage />} />
+              <Route path="/pesapal-checkout" element={<PesaPalCheckoutPage />} />
+              <Route path="/polar-checkout" element={<PolarCheckoutPage />} />
+              <Route path="/payment-success" element={<PaymentSuccessPage />} />
 
               {/* Auth Routes */}
               <Route path="/login" element={<LoginPage />} />

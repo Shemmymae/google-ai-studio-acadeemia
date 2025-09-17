@@ -1,7 +1,8 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { Link, NavLink as RouterNavLink } from "react-router-dom";
+import { Link, NavLink as RouterNavLink } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from './ThemeProvider';
 import { useCart } from './CartContext';

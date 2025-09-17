@@ -1,8 +1,7 @@
 
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../App';
 import { supabase } from '../supabase';
 import { useTheme } from '../components/ThemeProvider';

@@ -2,11 +2,12 @@
 
 
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LandingLayout from '../components/LandingLayout';
 import { useCart } from '../components/CartContext';
 import { useAuth } from '../App';
+import { getActivePesaPalConfig, getActivePayPalConfig, getActivePolarConfig } from '../db';
 
 const CheckoutPage = () => {
   const { cart, clearCart } = useCart();
@@ -14,10 +15,44 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const [pesapalEnabled, setPesapalEnabled] = useState(false);
+  const [paypalEnabled, setPaypalEnabled] = useState(false);
+  const [polarEnabled, setPolarEnabled] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
+
+  useEffect(() => {
+    const checkGateways = async () => {
+        const pesapalConfig = await getActivePesaPalConfig();
+        if(pesapalConfig) {
+            setPesapalEnabled(true);
+        }
+        const paypalConfig = await getActivePayPalConfig();
+        if (paypalConfig) {
+            setPaypalEnabled(true);
+        }
+        const polarConfig = await getActivePolarConfig();
+        if (polarConfig) {
+            setPolarEnabled(true);
+        }
+    };
+    checkGateways();
+  }, []);
+
   const handlePlaceOrder = (e: React.FormEvent) => {
       e.preventDefault();
+
+      if (selectedPaymentMethod === 'pesapal') {
+          navigate('/pesapal-checkout', { state: { email: user?.email, password: 'password-placeholder', totalCost: subtotal, currencySymbol: '$', planName: 'Addon Purchase', studentCount: 0 } });
+          return;
+      }
+
+      if (selectedPaymentMethod === 'polar') {
+          navigate('/polar-checkout', { state: { email: user?.email, password: 'password-placeholder', totalCost: subtotal, currencySymbol: '$', planName: 'Addon Purchase', studentCount: 0 } });
+          return;
+      }
+
       // In a real app, you would process the payment here.
-      console.log('Placing order for user:', user?.email);
+      console.log(`Placing order for user: ${user?.email} via ${selectedPaymentMethod}`);
       clearCart();
       navigate('/order-confirmation');
   };
@@ -43,13 +78,63 @@ const CheckoutPage = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Cardholder Name</label>
                 <input type="text" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Card Details</label>
-                <div className="mt-1 p-3 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600">
-                  {/* This would be a Stripe/Braintree element in a real app */}
-                  <p className="text-sm text-gray-500">Mock Card Element: 4242 **** **** 4242</p>
-                </div>
+              
+               <div>
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</h3>
+                  <div className="space-y-3">
+                      <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'card' ? 'border-primary bg-primary/5' : 'dark:border-gray-600'}`}>
+                          <input type="radio" name="paymentMethod" value="card" checked={selectedPaymentMethod === 'card'} onChange={() => setSelectedPaymentMethod('card')} className="h-4 w-4 text-primary focus:ring-primary"/>
+                          <span className="ml-3 text-sm font-medium">Credit Card</span>
+                      </label>
+                      {paypalEnabled && (
+                          <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'paypal' ? 'border-primary bg-primary/5' : 'dark:border-gray-600'}`}>
+                              <input type="radio" name="paymentMethod" value="paypal" checked={selectedPaymentMethod === 'paypal'} onChange={() => setSelectedPaymentMethod('paypal')} className="h-4 w-4 text-primary focus:ring-primary"/>
+                              <span className="ml-3 text-sm font-medium">PayPal</span>
+                          </label>
+                      )}
+                      {pesapalEnabled && (
+                          <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'pesapal' ? 'border-primary bg-primary/5' : 'dark:border-gray-600'}`}>
+                              <input type="radio" name="paymentMethod" value="pesapal" checked={selectedPaymentMethod === 'pesapal'} onChange={() => setSelectedPaymentMethod('pesapal')} className="h-4 w-4 text-primary focus:ring-primary"/>
+                              <span className="ml-3 text-sm font-medium">PesaPal</span>
+                          </label>
+                      )}
+                      {polarEnabled && (
+                          <label className={`flex items-center p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'polar' ? 'border-primary bg-primary/5' : 'dark:border-gray-600'}`}>
+                              <input type="radio" name="paymentMethod" value="polar" checked={selectedPaymentMethod === 'polar'} onChange={() => setSelectedPaymentMethod('polar')} className="h-4 w-4 text-primary focus:ring-primary"/>
+                              <span className="ml-3 text-sm font-medium">Polar</span>
+                          </label>
+                      )}
+                  </div>
               </div>
+
+              {selectedPaymentMethod === 'card' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Card Details</label>
+                    <div className="mt-1 p-3 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600">
+                      {/* This would be a Stripe/Braintree element in a real app */}
+                      <p className="text-sm text-gray-500">Mock Card Element: 4242 **** **** 4242</p>
+                    </div>
+                  </div>
+              )}
+
+              {selectedPaymentMethod === 'paypal' && (
+                  <div className="text-center p-4 border-2 border-dashed rounded-md dark:border-gray-600">
+                      <p className="text-sm text-text-secondary dark:text-gray-400">You will be redirected to PayPal to complete your payment after placing the order.</p>
+                  </div>
+              )}
+
+              {selectedPaymentMethod === 'pesapal' && (
+                  <div className="text-center p-4 border-2 border-dashed rounded-md dark:border-gray-600">
+                      <p className="text-sm text-text-secondary dark:text-gray-400">You will be redirected to PesaPal to complete your payment after placing the order.</p>
+                  </div>
+              )}
+
+              {selectedPaymentMethod === 'polar' && (
+                  <div className="text-center p-4 border-2 border-dashed rounded-md dark:border-gray-600">
+                      <p className="text-sm text-text-secondary dark:text-gray-400">You will be redirected to Polar.sh to complete your payment after placing the order.</p>
+                  </div>
+              )}
+
               <button type="submit" className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-hover transition-colors">
                 Place Order
               </button>

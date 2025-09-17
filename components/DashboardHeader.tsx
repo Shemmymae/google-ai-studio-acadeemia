@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../App';
 import ThemeToggle from './ThemeToggle';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { useTheme } from './ThemeProvider';
 

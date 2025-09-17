@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { getCategories, addCategory, deleteCategory, Category, getSchools, School } from '../../db';
+import { useAuth } from '../../App';
 
 // --- ICONS ---
 const icons = {
@@ -11,31 +12,48 @@ const icons = {
     delete: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
 };
 
-const AddCategoryForm = ({ onCategoryAdded }: { onCategoryAdded: () => void }) => {
+const AddCategoryForm = ({ onCategoryAdded, isSuperAdmin }: { onCategoryAdded: () => void; isSuperAdmin: boolean; }) => {
     const [schools, setSchools] = useState<School[]>([]);
-    const [loadingSchools, setLoadingSchools] = useState(true);
+    const [loadingSchools, setLoadingSchools] = useState(isSuperAdmin);
 
     useEffect(() => {
-        const fetchSchools = async () => {
-            setLoadingSchools(true);
-            const schoolsData = await getSchools();
-            setSchools(schoolsData);
-            setLoadingSchools(false);
-        };
-        fetchSchools();
-    }, []);
+        if (isSuperAdmin) {
+            const fetchSchools = async () => {
+                setLoadingSchools(true);
+                const schoolsData = await getSchools();
+                setSchools(schoolsData);
+                setLoadingSchools(false);
+            };
+            fetchSchools();
+        }
+    }, [isSuperAdmin]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = e.currentTarget;
         const formData = new FormData(form);
-        const newCategory: Omit<Category, 'id' | 'school_id'> = {
-            school: formData.get('school') as string,
+
+        const newCategoryData: { name: string, school_id?: number } = {
             name: formData.get('name') as string,
         };
-        await addCategory(newCategory);
-        onCategoryAdded();
-        form.reset();
+        
+        if (isSuperAdmin) {
+            const schoolId = Number(formData.get('school_id'));
+            if (!schoolId) {
+                alert("Super Admin must select a school.");
+                return;
+            }
+            newCategoryData.school_id = schoolId;
+        }
+
+        try {
+            await addCategory(newCategoryData);
+            onCategoryAdded();
+            form.reset();
+        } catch(error) {
+            alert((error as Error).message);
+            console.error(error);
+        }
     };
 
     return (
@@ -44,24 +62,26 @@ const AddCategoryForm = ({ onCategoryAdded }: { onCategoryAdded: () => void }) =
                 {icons.add} Add Category
             </h3>
             <form className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="school" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        School <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                        <select id="school" name="school" required className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" disabled={loadingSchools}>
-                           <option value="">{loadingSchools ? 'Loading...' : 'Select'}</option>
-                            {schools.map(school => (
-                                <option key={school.id} value={school.name}>
-                                    {school.name}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-400">
-                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                {isSuperAdmin && (
+                    <div>
+                        <label htmlFor="school" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            School <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                            <select id="school" name="school_id" required className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" disabled={loadingSchools}>
+                               <option value="">{loadingSchools ? 'Loading...' : 'Select'}</option>
+                                {schools.map(school => (
+                                    <option key={school.id} value={school.id}>
+                                        {school.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-400">
+                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Category Name <span className="text-red-500">*</span>
@@ -132,6 +152,8 @@ const CategoryList = ({ categories, onCategoryDeleted }: { categories: Category[
 const CategoryPage = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const { profile } = useAuth();
+    const isSuperAdmin = profile?.role === 'Super Admin';
 
     const fetchCategories = useCallback(async () => {
         setLoading(true);
@@ -148,7 +170,7 @@ const CategoryPage = () => {
         <DashboardLayout title="Inventory">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
-                    <AddCategoryForm onCategoryAdded={fetchCategories} />
+                    <AddCategoryForm onCategoryAdded={fetchCategories} isSuperAdmin={isSuperAdmin} />
                 </div>
                 <div className="lg:col-span-2">
                     {loading ? (

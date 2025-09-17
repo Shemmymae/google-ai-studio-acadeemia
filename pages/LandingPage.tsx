@@ -1,10 +1,7 @@
 
-
-
-
 import React from 'react';
 // FIX: Corrected import path for react-router-dom.
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import LandingLayout from '../components/LandingLayout';
 
 // --- SVG Icons for the new sections ---

@@ -1,9 +1,6 @@
 
-
-
-
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { getSchools, School } from '../db';
 
