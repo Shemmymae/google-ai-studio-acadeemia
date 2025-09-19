@@ -1,5 +1,3 @@
-
-
 import { supabase } from './supabase';
 
 // --- NEW: USER PROFILE INTERFACE ---
@@ -411,6 +409,17 @@ export interface DefaultRole {
   id: number;
   name: string;
   description?: string;
+}
+
+// --- NEW: 2FA SETTINGS INTERFACE ---
+export interface TwoFactorSettings {
+  id?: number;
+  school_id: number;
+  is_enabled: boolean;
+  remember_browser: boolean;
+  cookie_expiry_days: number;
+  email_instruction: string;
+  app_instruction: string;
 }
 
 
@@ -1241,4 +1250,30 @@ export async function syncDefaultRolesForAllSchools(): Promise<{ created: number
     }
 
     return { created: rolesToCreate.length, total: schools.length * defaultRoleNames.length };
+}
+
+// --- NEW: 2FA SETTINGS FUNCTIONS ---
+export const getTwoFactorSettings = async (schoolId: number): Promise<TwoFactorSettings | null> => {
+    const { data, error } = await supabase
+        .from('two_factor_settings')
+        .select('*')
+        .eq('school_id', schoolId)
+        .single();
+    
+    if (error && error.code !== 'PGRST116') { // PGRST116: no rows found
+        console.error("Error fetching 2FA settings:", error);
+        return null;
+    }
+    return data;
+}
+
+export const upsertTwoFactorSettings = async (settings: Partial<TwoFactorSettings> & { school_id: number }) => {
+    const { error } = await supabase
+        .from('two_factor_settings')
+        .upsert(settings, { onConflict: 'school_id' });
+
+    if (error) {
+        console.error("Error upserting 2FA settings:", error);
+        throw error;
+    }
 }

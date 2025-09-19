@@ -1,4 +1,6 @@
-import { createClient, type User, type Session } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+// FIX: Import User and Session types directly from auth package to resolve module export errors.
+import type { User, Session } from '@supabase/gotrue-js';
 
 // IMPORTANT: Replace with your Supabase project's URL and Anon Key
 const supabaseUrl = 'https://oqasxrkbosdqaldwydeu.supabase.co';
