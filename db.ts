@@ -1261,8 +1261,8 @@ export const getTwoFactorSettings = async (schoolId: number): Promise<TwoFactorS
         .single();
     
     if (error && error.code !== 'PGRST116') { // PGRST116: no rows found
-        console.error("Error fetching 2FA settings:", error);
-        return null;
+        console.error("Error fetching 2FA settings:", error.message);
+        throw error;
     }
     return data;
 }
@@ -1273,7 +1273,7 @@ export const upsertTwoFactorSettings = async (settings: Partial<TwoFactorSetting
         .upsert(settings, { onConflict: 'school_id' });
 
     if (error) {
-        console.error("Error upserting 2FA settings:", error);
+        console.error("Error upserting 2FA settings:", error.message);
         throw error;
     }
 }

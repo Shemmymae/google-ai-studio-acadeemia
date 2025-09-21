@@ -67,15 +67,23 @@ const My2FASetupPage = () => {
         setLoading(true);
         setError('');
 
-        const { error: challengeError } = await supabase.auth.mfa.challenge({ factorId: newFactor.id });
+        // FIX: The `challenge` method returns a `challengeId` which is required for `verify`.
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: newFactor.id });
         if (challengeError) {
             setError(challengeError.message);
             setLoading(false);
             return;
         }
 
+        if (!challengeData) {
+            setError("Failed to create MFA challenge.");
+            setLoading(false);
+            return;
+        }
+
         const { error: verifyError } = await supabase.auth.mfa.verify({
             factorId: newFactor.id,
+            challengeId: challengeData.id,
             code: verifyCode,
         });
 

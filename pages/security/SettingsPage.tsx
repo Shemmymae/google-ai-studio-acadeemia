@@ -64,21 +64,27 @@ const TwoFASettingsPage = () => {
             setError('');
             setShowSettings(true);
             const schoolId = parseInt(selectedSchool, 10);
-            const existingSettings = await getTwoFactorSettings(schoolId);
-            if (existingSettings) {
-                setSettings(existingSettings);
-            } else {
-                // Reset to default if no settings found
-                setSettings({
-                    school_id: schoolId,
-                    is_enabled: false,
-                    remember_browser: true,
-                    cookie_expiry_days: 15,
-                    email_instruction: 'A unique code has been sent to your email address. Please check your inbox for the 2FA verification code.',
-                    app_instruction: 'Download Google Authenticator App in your mobile device.',
-                });
+            try {
+                const existingSettings = await getTwoFactorSettings(schoolId);
+                if (existingSettings) {
+                    setSettings(existingSettings);
+                } else {
+                    // Reset to default if no settings found
+                    setSettings({
+                        school_id: schoolId,
+                        is_enabled: false,
+                        remember_browser: true,
+                        cookie_expiry_days: 15,
+                        email_instruction: 'A unique code has been sent to your email address. Please check your inbox for the 2FA verification code.',
+                        app_instruction: 'Download Google Authenticator App in your mobile device.',
+                    });
+                }
+            } catch (err: any) {
+                setError(err.message || 'Failed to fetch settings.');
+                setShowSettings(false); // Hide form on error
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         } else {
             setFilterError("Please select a school to filter.");
             setShowSettings(false);
