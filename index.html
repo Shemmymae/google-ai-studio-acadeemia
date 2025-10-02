@@ -25,11 +25,18 @@
             },
             animation: {
               'infinite-scroll': 'infinite-scroll 60s linear infinite',
+              'float': 'float 3s ease-in-out infinite',
+              'float-delayed': 'float 3s ease-in-out 1s infinite',
+              'float-slow': 'float 4s ease-in-out infinite',
             },
             keyframes: {
               'infinite-scroll': {
                 '0%': { transform: 'translateX(0)' },
                 '100%': { transform: 'translateX(-50%)' },
+              },
+              'float': {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-20px)' },
               },
             },
           },
