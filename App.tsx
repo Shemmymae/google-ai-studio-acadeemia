@@ -306,6 +306,13 @@ import ApplicationsManagementPage from './pages/company/ApplicationsManagementPa
 import InterviewSchedulingPage from './pages/company/InterviewSchedulingPage';
 import CareersAnalyticsDashboardPage from './pages/company/CareersAnalyticsDashboardPage';
 
+// Blog Manager Pages
+import BlogManagerDashboardPage from './pages/company/BlogManagerDashboardPage';
+import BlogPostsPage from './pages/company/BlogPostsPage';
+import BlogPostEditorPage from './pages/company/BlogPostEditorPage';
+import BlogCategoriesTagsPage from './pages/company/BlogCategoriesTagsPage';
+import BlogCommentsPage from './pages/company/BlogCommentsPage';
+
 
 // 1. Authentication Context with Profile
 interface AuthContextType {
@@ -769,6 +776,14 @@ function App() {
               <Route path="/system-settings/database-backup" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><DatabaseBackupPage /></ProtectedRoute>} />
               <Route path="/system-settings/system-update" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><SystemUpdatePage /></ProtectedRoute>} />
               <Route path="/system-settings/user-login-log" element={<ProtectedRoute allowedRoles={ALL_AUTHENTICATED}><UserLoginLogPage /></ProtectedRoute>} />
+
+              {/* Blog Manager Routes (Super Admin) */}
+              <Route path="/company/blog-manager" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogManagerDashboardPage /></ProtectedRoute>} />
+              <Route path="/company/blog-manager/posts" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogPostsPage /></ProtectedRoute>} />
+              <Route path="/company/blog-manager/posts/new" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogPostEditorPage /></ProtectedRoute>} />
+              <Route path="/company/blog-manager/posts/edit/:id" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogPostEditorPage /></ProtectedRoute>} />
+              <Route path="/company/blog-manager/categories" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogCategoriesTagsPage /></ProtectedRoute>} />
+              <Route path="/company/blog-manager/comments" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><BlogCommentsPage /></ProtectedRoute>} />
 
             </Routes>
           </HashRouter>
