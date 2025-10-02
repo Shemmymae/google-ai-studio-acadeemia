@@ -16,7 +16,7 @@
   - `is_draft` (boolean, default false) - Draft status
   - `created_at` (timestamptz, default now()) - Message creation time
   - `updated_at` (timestamptz, default now()) - Last update time
-  - `school_id` (uuid, foreign key) - Associated school for filtering
+  - `school_id` (bigint, foreign key) - Associated school for filtering
 
   ### 2. `message_recipients`
   Tracks message recipients and their read status
@@ -54,10 +54,36 @@ CREATE TABLE IF NOT EXISTS messages (
   subject text NOT NULL,
   body text NOT NULL,
   is_draft boolean DEFAULT false,
-  school_id uuid REFERENCES schools(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+-- Fix school_id column type if it exists with wrong type
+DO $$
+BEGIN
+  -- Drop constraint if it exists
+  IF EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'messages_school_id_fkey'
+    AND table_name = 'messages'
+  ) THEN
+    ALTER TABLE messages DROP CONSTRAINT messages_school_id_fkey;
+  END IF;
+
+  -- Check if column exists
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'messages' AND column_name = 'school_id'
+  ) THEN
+    -- Drop and recreate with correct type
+    ALTER TABLE messages DROP COLUMN school_id;
+  END IF;
+
+  -- Add column with correct type (bigint to match schools.id)
+  ALTER TABLE messages ADD COLUMN school_id bigint;
+  ALTER TABLE messages ADD CONSTRAINT messages_school_id_fkey
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE SET NULL;
+END $$;
 
 -- Create message_recipients table
 CREATE TABLE IF NOT EXISTS message_recipients (
