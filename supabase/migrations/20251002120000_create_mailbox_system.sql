@@ -58,17 +58,31 @@ CREATE TABLE IF NOT EXISTS messages (
   updated_at timestamptz DEFAULT now()
 );
 
--- Add school_id column with proper type checking
+-- Fix school_id column type if it exists with wrong type
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  -- Drop constraint if it exists
+  IF EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'messages_school_id_fkey'
+    AND table_name = 'messages'
+  ) THEN
+    ALTER TABLE messages DROP CONSTRAINT messages_school_id_fkey;
+  END IF;
+
+  -- Check if column exists
+  IF EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_name = 'messages' AND column_name = 'school_id'
   ) THEN
-    ALTER TABLE messages ADD COLUMN school_id uuid;
-    ALTER TABLE messages ADD CONSTRAINT messages_school_id_fkey
-      FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE SET NULL;
+    -- Drop and recreate with correct type
+    ALTER TABLE messages DROP COLUMN school_id;
   END IF;
+
+  -- Add column with correct type
+  ALTER TABLE messages ADD COLUMN school_id uuid;
+  ALTER TABLE messages ADD CONSTRAINT messages_school_id_fkey
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE SET NULL;
 END $$;
 
 -- Create message_recipients table
