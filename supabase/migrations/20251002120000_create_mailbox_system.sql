@@ -54,10 +54,22 @@ CREATE TABLE IF NOT EXISTS messages (
   subject text NOT NULL,
   body text NOT NULL,
   is_draft boolean DEFAULT false,
-  school_id uuid REFERENCES schools(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+-- Add school_id column with proper type checking
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'messages' AND column_name = 'school_id'
+  ) THEN
+    ALTER TABLE messages ADD COLUMN school_id uuid;
+    ALTER TABLE messages ADD CONSTRAINT messages_school_id_fkey
+      FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- Create message_recipients table
 CREATE TABLE IF NOT EXISTS message_recipients (
