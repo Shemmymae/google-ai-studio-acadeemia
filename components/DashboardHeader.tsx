@@ -4,6 +4,7 @@ import ThemeToggle from './ThemeToggle';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { useTheme } from './ThemeProvider';
+import MessageNotificationDropdown from './MessageNotificationDropdown';
 
 // --- SVG Icons for the new header ---
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>;
@@ -67,6 +68,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, onToggleSideba
                 {/* Action Icons */}
                 <button className="p-2 rounded-full text-text-secondary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Language"><GlobeIcon /></button>
                 <button className="p-2 rounded-full text-text-secondary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Calendar"><CalendarIcon /></button>
+                <MessageNotificationDropdown />
                 <button className="p-2 rounded-full text-text-secondary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 relative" aria-label="Notifications">
                     <BellIcon />
                     <span className="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-card dark:ring-gray-800"></span>
