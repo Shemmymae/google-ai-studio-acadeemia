@@ -436,7 +436,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Event Type', path: '/events/type' },
         { name: 'Events', path: '/events/main' },
     ]},
-    { name: 'Bulk Sms And Email', icon: icons.forms, children: [
+    { name: 'Bulk Sms & Email', icon: icons.forms, children: [
         { name: 'Send Sms / Email', path: '/bulk-sms-email/send' },
         { name: 'Sms / Email Report', path: '/bulk-sms-email/report' },
         { name: 'Sms Template', path: '/bulk-sms-email/sms-template' },
