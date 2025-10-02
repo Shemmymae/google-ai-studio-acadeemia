@@ -254,7 +254,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Newsletter', path: '/forms-manager/newsletter' },
       ]},
       { name: 'Settings', icon: icons.settings, children: [
-          { name: 'Currency Management', path: '/currency-management' },
+          { name: 'Currency Manager', path: '/currency-management' },
           { name: 'Global Settings', path: '/system-settings/global' },
           { name: 'School Settings', path: '/system-settings/school' },
           { name: 'Database Backup', path: '/system-settings/database-backup' },
@@ -385,7 +385,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Live Class', path: '/live-class/main' },
         { name: 'Live Class Reports', path: '/live-class/reports' },
     ]},
-    { name: 'Attachments Book', icon: icons.admission, children: [
+    { name: 'Attachments', icon: icons.admission, children: [
         { name: 'Upload Content', path: '/attachments/upload' },
         { name: 'Attachment Type', path: '/attachments/type' },
     ]},
