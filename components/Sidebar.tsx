@@ -445,7 +445,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Staff Birthday Wishes', path: '/bulk-sms-email/staff-birthday' },
     ]},
     { 
-        name: 'Student Accounting', 
+        name: 'Student Accounts', 
         icon: icons.accounting, 
         children: [
             { 
@@ -465,7 +465,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         ]
     },
     { 
-        name: 'Office Accounting', 
+        name: 'Office Accounts', 
         icon: icons.accounting, 
         children: [
             { name: 'Account', path: '/office-accounting/account' },
