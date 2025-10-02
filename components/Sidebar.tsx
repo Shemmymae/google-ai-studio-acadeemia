@@ -475,7 +475,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
             { name: 'Voucher Head', path: '/office-accounting/voucher-head' },
         ]
     },
-    { name: 'Message', icon: icons.crm, path: '/dashboard' },
+    { name: 'Message', icon: icons.crm, path: '/mailbox' },
     { 
         name: 'Reports', 
         icon: icons.accounting, 
