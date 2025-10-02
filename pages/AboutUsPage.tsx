@@ -261,9 +261,20 @@ const OurImpactSection = () => (
                 ))}
             </div>
 
-            <div className="bg-card dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                <h3 className="text-2xl font-bold mb-6 text-center">Success Stories</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold">Success Stories</h3>
+                <p className="text-lg text-text-secondary dark:text-gray-400 mt-2">
+                    Hear from educational institutions that transformed their operations with Acadeemia.
+                </p>
+            </div>
+
+            <div
+                className="w-full overflow-hidden"
+                style={{
+                    maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+                }}
+            >
+                <div className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused]">
                     {[
                         {
                             institution: "Westlake University",
@@ -279,15 +290,204 @@ const OurImpactSection = () => (
                             institution: "Eastside High School",
                             quote: "The parents at our school love the transparency and communication features. Attendance rates improved by 12% in the first year after implementation.",
                             person: "Thomas Anderson, Principal"
+                        },
+                        {
+                            institution: "Riverside International School",
+                            quote: "The financial management module transformed how we handle fee collections. Our accounting team saves over 20 hours per week, and parents appreciate the transparency.",
+                            person: "Sarah Mitchell, Bursar"
+                        },
+                        {
+                            institution: "Oakwood Academy",
+                            quote: "As a multi-grade institution, managing different curricula was complex. Acadeemia's academic module made it seamless, and our teachers are thrilled with the grade reporting features.",
+                            person: "Prof. James O'Connor, Academic Director"
+                        },
+                        {
+                            institution: "Sunset Valley School District",
+                            quote: "We consolidated 8 different systems into one platform. The integration saved us thousands in licensing fees while improving data accuracy across all our schools.",
+                            person: "Michael Chen, CTO"
+                        },
+                        {
+                            institution: "Heritage College",
+                            quote: "The student portal has been a game-changer for engagement. Students and parents now have 24/7 access to grades, attendance, and announcements. Communication has never been better.",
+                            person: "Dr. Patricia Williams, Dean of Students"
+                        },
+                        {
+                            institution: "Pinnacle Learning Center",
+                            quote: "Implementation was surprisingly smooth. The support team was with us every step, and we went live in just 3 weeks. Our staff adapted quickly thanks to the intuitive interface.",
+                            person: "Robert Taylor, Operations Manager"
+                        },
+                        {
+                            institution: "Green Valley Elementary",
+                            quote: "The attendance tracking feature has helped us identify at-risk students early. We've seen a 15% improvement in attendance since implementing Acadeemia.",
+                            person: "Linda Jackson, Principal"
+                        },
+                        {
+                            institution: "Metropolitan University",
+                            quote: "Managing 15,000 students across multiple departments was overwhelming. Acadeemia's scalability and customization options made it perfect for our large institution.",
+                            person: "Dr. Ahmed Hassan, Registrar"
+                        },
+                        {
+                            institution: "Bright Futures Academy",
+                            quote: "The library management module digitized our entire catalog. Students can now search and reserve books online, increasing library usage by 40%.",
+                            person: "Emily Rodriguez, Head Librarian"
+                        },
+                        {
+                            institution: "Excellence Preparatory School",
+                            quote: "The exam management system streamlined our entire assessment process. From scheduling to grade distribution, everything is automated and error-free.",
+                            person: "Dr. David Kim, Assessment Coordinator"
+                        },
+                        {
+                            institution: "Harmony International School",
+                            quote: "As a bilingual institution, we needed a system that supports multiple languages. Acadeemia's localization features exceeded our expectations.",
+                            person: "Maria Gonzalez, Director"
+                        },
+                        {
+                            institution: "Summit Technical College",
+                            quote: "The certificate generation feature saves us countless hours. We can now issue professional certificates to our 5,000+ students in minutes instead of days.",
+                            person: "Thomas Wright, Administrative Head"
+                        },
+                        {
+                            institution: "Lakeside Community School",
+                            quote: "Parent-teacher communication improved dramatically with the built-in messaging system. Parents love being able to directly reach teachers without phone tag.",
+                            person: "Jennifer Brown, Parent Liaison"
+                        },
+                        {
+                            institution: "Northstar Academy",
+                            quote: "The hostel management module is phenomenal. We can track room assignments, maintenance requests, and student check-ins all in one place.",
+                            person: "Paul Anderson, Hostel Warden"
+                        },
+                        {
+                            institution: "Wisdom International School",
+                            quote: "The transport management feature gives parents real-time bus tracking. The peace of mind this provides families is invaluable, and it's reduced calls to our office by 60%.",
+                            person: "Rachel Kumar, Transport Coordinator"
+                        },
+                        {
+                            institution: "Phoenix Charter School",
+                            quote: "The customizable reports help us make data-driven decisions. We can analyze everything from student performance to resource allocation with just a few clicks.",
+                            person: "Dr. Steven Martinez, Principal"
+                        },
+                        {
+                            institution: "Riverside Business College",
+                            quote: "The alumni management system helps us stay connected with graduates. We've seen a 35% increase in alumni engagement and donations since implementation.",
+                            person: "Catherine Lee, Alumni Relations Director"
+                        },
+                        {
+                            institution: "Cornerstone Academy",
+                            quote: "Security and data privacy are paramount for us. Acadeemia's robust security features and compliance with international standards gave us complete confidence.",
+                            person: "Mark Thompson, IT Security Officer"
                         }
-                    ].map((story, index) => (
-                        <div key={index} className="flex flex-col h-full">
-                            <div className="bg-secondary dark:bg-gray-800/50 p-6 rounded-lg mb-4 flex-grow">
-                                <p className="italic text-text-secondary dark:text-gray-300">"{story.quote}"</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold text-text-primary dark:text-gray-100">{story.person}</p>
-                                <p className="text-sm text-text-secondary dark:text-gray-400">{story.institution}</p>
+                    ].concat([
+                        {
+                            institution: "Westlake University",
+                            quote: "Acadeemia revolutionized our administrative processes, reducing paperwork by 85% and allowing our staff to focus on what matters most: supporting our students.",
+                            person: "Dr. Richard Martinez, President"
+                        },
+                        {
+                            institution: "Global Academy Network",
+                            quote: "Managing our 12 campuses was a logistical challenge until we implemented Acadeemia. Now we have complete visibility and standardized processes across all locations.",
+                            person: "Jennifer Lewis, Operations Director"
+                        },
+                        {
+                            institution: "Eastside High School",
+                            quote: "The parents at our school love the transparency and communication features. Attendance rates improved by 12% in the first year after implementation.",
+                            person: "Thomas Anderson, Principal"
+                        },
+                        {
+                            institution: "Riverside International School",
+                            quote: "The financial management module transformed how we handle fee collections. Our accounting team saves over 20 hours per week, and parents appreciate the transparency.",
+                            person: "Sarah Mitchell, Bursar"
+                        },
+                        {
+                            institution: "Oakwood Academy",
+                            quote: "As a multi-grade institution, managing different curricula was complex. Acadeemia's academic module made it seamless, and our teachers are thrilled with the grade reporting features.",
+                            person: "Prof. James O'Connor, Academic Director"
+                        },
+                        {
+                            institution: "Sunset Valley School District",
+                            quote: "We consolidated 8 different systems into one platform. The integration saved us thousands in licensing fees while improving data accuracy across all our schools.",
+                            person: "Michael Chen, CTO"
+                        },
+                        {
+                            institution: "Heritage College",
+                            quote: "The student portal has been a game-changer for engagement. Students and parents now have 24/7 access to grades, attendance, and announcements. Communication has never been better.",
+                            person: "Dr. Patricia Williams, Dean of Students"
+                        },
+                        {
+                            institution: "Pinnacle Learning Center",
+                            quote: "Implementation was surprisingly smooth. The support team was with us every step, and we went live in just 3 weeks. Our staff adapted quickly thanks to the intuitive interface.",
+                            person: "Robert Taylor, Operations Manager"
+                        },
+                        {
+                            institution: "Green Valley Elementary",
+                            quote: "The attendance tracking feature has helped us identify at-risk students early. We've seen a 15% improvement in attendance since implementing Acadeemia.",
+                            person: "Linda Jackson, Principal"
+                        },
+                        {
+                            institution: "Metropolitan University",
+                            quote: "Managing 15,000 students across multiple departments was overwhelming. Acadeemia's scalability and customization options made it perfect for our large institution.",
+                            person: "Dr. Ahmed Hassan, Registrar"
+                        },
+                        {
+                            institution: "Bright Futures Academy",
+                            quote: "The library management module digitized our entire catalog. Students can now search and reserve books online, increasing library usage by 40%.",
+                            person: "Emily Rodriguez, Head Librarian"
+                        },
+                        {
+                            institution: "Excellence Preparatory School",
+                            quote: "The exam management system streamlined our entire assessment process. From scheduling to grade distribution, everything is automated and error-free.",
+                            person: "Dr. David Kim, Assessment Coordinator"
+                        },
+                        {
+                            institution: "Harmony International School",
+                            quote: "As a bilingual institution, we needed a system that supports multiple languages. Acadeemia's localization features exceeded our expectations.",
+                            person: "Maria Gonzalez, Director"
+                        },
+                        {
+                            institution: "Summit Technical College",
+                            quote: "The certificate generation feature saves us countless hours. We can now issue professional certificates to our 5,000+ students in minutes instead of days.",
+                            person: "Thomas Wright, Administrative Head"
+                        },
+                        {
+                            institution: "Lakeside Community School",
+                            quote: "Parent-teacher communication improved dramatically with the built-in messaging system. Parents love being able to directly reach teachers without phone tag.",
+                            person: "Jennifer Brown, Parent Liaison"
+                        },
+                        {
+                            institution: "Northstar Academy",
+                            quote: "The hostel management module is phenomenal. We can track room assignments, maintenance requests, and student check-ins all in one place.",
+                            person: "Paul Anderson, Hostel Warden"
+                        },
+                        {
+                            institution: "Wisdom International School",
+                            quote: "The transport management feature gives parents real-time bus tracking. The peace of mind this provides families is invaluable, and it's reduced calls to our office by 60%.",
+                            person: "Rachel Kumar, Transport Coordinator"
+                        },
+                        {
+                            institution: "Phoenix Charter School",
+                            quote: "The customizable reports help us make data-driven decisions. We can analyze everything from student performance to resource allocation with just a few clicks.",
+                            person: "Dr. Steven Martinez, Principal"
+                        },
+                        {
+                            institution: "Riverside Business College",
+                            quote: "The alumni management system helps us stay connected with graduates. We've seen a 35% increase in alumni engagement and donations since implementation.",
+                            person: "Catherine Lee, Alumni Relations Director"
+                        },
+                        {
+                            institution: "Cornerstone Academy",
+                            quote: "Security and data privacy are paramount for us. Acadeemia's robust security features and compliance with international standards gave us complete confidence.",
+                            person: "Mark Thompson, IT Security Officer"
+                        }
+                    ]).map((story, index) => (
+                        <div key={index} className="flex-shrink-0 mx-4 w-[calc(100vw-4rem)] sm:w-[400px]">
+                            <div className="bg-card dark:bg-gray-800 p-8 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col justify-between min-h-[280px]">
+                                <div>
+                                    <div className="flex text-yellow-400 mb-4">★★★★★</div>
+                                    <p className="italic text-text-secondary dark:text-gray-300 mb-6">"{story.quote}"</p>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-text-primary dark:text-gray-100">{story.person}</p>
+                                    <p className="text-sm text-text-secondary dark:text-gray-400">{story.institution}</p>
+                                </div>
                             </div>
                         </div>
                     ))}
