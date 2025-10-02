@@ -37,6 +37,9 @@ const Header = () => {
     const [isMobileProductOpen, setMobileProductOpen] = useState(false);
     const [isMobileCompanyOpen, setMobileCompanyOpen] = useState(false);
 
+    const productTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const companyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const { theme } = useTheme();
     const { cart } = useCart();
     const logoLight = 'https://oqasxrkbosdqaldwydeu.supabase.co/storage/v1/object/sign/website_images/logo/logo-light.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNWYwZjU5NS00NmQxLTRkOTctYTMxMS1lMmMxMTcyMzEyODUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX2ltYWdlcy9sb2dvL2xvZ28tbGlnaHQucG5nIiwiaWF0IjoxNzU2NzU2NzkzLCJleHAiOjMzMjkyNzU2NzkzfQ.4sLXHZ9j2o5OpP6lSjYHzGEXYU_-hPkHmZJ1zjETiQI';
@@ -49,7 +52,46 @@ const Header = () => {
         setIsMobileMenuOpen(false);
         setMobileProductOpen(false);
         setMobileCompanyOpen(false);
-    }
+    };
+
+    const handleProductMouseEnter = () => {
+        if (productTimeoutRef.current) {
+            clearTimeout(productTimeoutRef.current);
+        }
+        setProductDropdownOpen(true);
+        setCompanyDropdownOpen(false);
+    };
+
+    const handleProductMouseLeave = () => {
+        productTimeoutRef.current = setTimeout(() => {
+            setProductDropdownOpen(false);
+        }, 200);
+    };
+
+    const handleCompanyMouseEnter = () => {
+        if (companyTimeoutRef.current) {
+            clearTimeout(companyTimeoutRef.current);
+        }
+        setCompanyDropdownOpen(true);
+        setProductDropdownOpen(false);
+    };
+
+    const handleCompanyMouseLeave = () => {
+        companyTimeoutRef.current = setTimeout(() => {
+            setCompanyDropdownOpen(false);
+        }, 200);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (productTimeoutRef.current) {
+                clearTimeout(productTimeoutRef.current);
+            }
+            if (companyTimeoutRef.current) {
+                clearTimeout(companyTimeoutRef.current);
+            }
+        };
+    }, []);
 
     return (
       <header className="bg-background/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800">
@@ -58,12 +100,12 @@ const Header = () => {
             <img src={logoSrc} alt="Acadeemia Logo" className="h-10 w-auto" />
           </Link>
           <nav className="hidden lg:flex items-center space-x-8">
-            <div 
-                className="relative" 
-                onMouseEnter={() => { setProductDropdownOpen(true); setCompanyDropdownOpen(false); }}
-                onMouseLeave={() => setProductDropdownOpen(false)}
+            <div
+                className="relative"
+                onMouseEnter={handleProductMouseEnter}
+                onMouseLeave={handleProductMouseLeave}
             >
-                <button 
+                <button
                     className="flex items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium"
                 >
                     Product
@@ -71,8 +113,8 @@ const Header = () => {
                 </button>
                 {isProductDropdownOpen && (
                     <div className="absolute top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 z-20">
-                        <Link to="/modules" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Modules</Link>
-                        <Link to="/versions" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deployment</Link>
+                        <Link to="/modules" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">Modules</Link>
+                        <Link to="/versions" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md">Deployment</Link>
                     </div>
                 )}
             </div>
@@ -80,12 +122,12 @@ const Header = () => {
             <NavLink to="/demo">Demo</NavLink>
             <NavLink to="/store">Store</NavLink>
             <NavLink to="/blog">Blog</NavLink>
-            <div 
-                className="relative" 
-                onMouseEnter={() => { setCompanyDropdownOpen(true); setProductDropdownOpen(false); }}
-                onMouseLeave={() => setCompanyDropdownOpen(false)}
+            <div
+                className="relative"
+                onMouseEnter={handleCompanyMouseEnter}
+                onMouseLeave={handleCompanyMouseLeave}
             >
-                <button 
+                <button
                     className="flex items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium"
                 >
                     Company
@@ -93,8 +135,8 @@ const Header = () => {
                 </button>
                 {isCompanyDropdownOpen && (
                     <div className="absolute top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 z-20">
-                        <Link to="/about" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">About Us</Link>
-                        <Link to="/why-acadeemia" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Why Acadeemia?</Link>
+                        <Link to="/about" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-md">About Us</Link>
+                        <Link to="/why-acadeemia" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-md">Why Acadeemia?</Link>
                     </div>
                 )}
             </div>
