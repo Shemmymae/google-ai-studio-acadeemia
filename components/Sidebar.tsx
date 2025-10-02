@@ -246,7 +246,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Transactions', path: '/subscription/transactions' },
           { name: 'Offline Payments', path: '/subscription/offline-payments' },
       ]},
-      { name: 'Office Accounting', icon: icons.accounting, path: '/accounting' },
+      { name: 'Office Accounts', icon: icons.accounting, path: '/accounting' },
       { name: 'Integrations', icon: icons.integrations, path: '/integrations' },
       { name: 'Forms Manager', icon: icons.forms, children: [
           { name: 'Contact Us', path: '/forms-manager/contact-us' },
