@@ -4,7 +4,7 @@ import DashboardLayout from '../../../components/DashboardLayout';
 const AdmissionReportPage = () => {
   const [showResults, setShowResults] = useState(false);
   const [filters, setFilters] = useState({
-    branch: '',
+    school: '',
     class: '',
     section: '',
     dateRange: '2025/10/02 - 2025/10/02'
@@ -34,12 +34,12 @@ const AdmissionReportPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-text-primary dark:text-gray-300 mb-2">
-                Branch <span className="text-red-500">*</span>
+                School <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full px-4 py-2 bg-gray-700 dark:bg-gray-900 text-white rounded border border-gray-600 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                value={filters.branch}
-                onChange={(e) => setFilters({...filters, branch: e.target.value})}
+                value={filters.school}
+                onChange={(e) => setFilters({...filters, school: e.target.value})}
               >
                 <option value="">Select</option>
                 <option value="icon">Icon School & College</option>
@@ -54,9 +54,9 @@ const AdmissionReportPage = () => {
                 className="w-full px-4 py-2 bg-gray-700 dark:bg-gray-900 text-white rounded border border-gray-600 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 value={filters.class}
                 onChange={(e) => setFilters({...filters, class: e.target.value})}
-                disabled={!filters.branch}
+                disabled={!filters.school}
               >
-                <option value="">First Select The Branch</option>
+                <option value="">First Select The School</option>
                 <option value="six">Six</option>
               </select>
             </div>
