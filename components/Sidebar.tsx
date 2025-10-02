@@ -233,6 +233,10 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
   const companyManagementNavItems: NavItemType[] = [
       { name: 'Company Dashboard', icon: icons.dashboard, path: '/company-dashboard' },
       { name: 'CRM', icon: icons.crm, path: '/crm' },
+      { name: 'Careers Management', icon: icons.hrm, children: [
+          { name: 'Job Postings', path: '/company/careers' },
+          { name: 'Analytics', path: '/company/careers/analytics' },
+      ]},
       { name: 'Subscription', icon: icons.subscription, children: [
           { name: 'Subscriptions', path: '/subscription/list' },
           { name: 'Pending Requests', path: '/subscription/pending' },
