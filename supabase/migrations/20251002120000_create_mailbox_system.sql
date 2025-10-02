@@ -16,7 +16,7 @@
   - `is_draft` (boolean, default false) - Draft status
   - `created_at` (timestamptz, default now()) - Message creation time
   - `updated_at` (timestamptz, default now()) - Last update time
-  - `school_id` (uuid, foreign key) - Associated school for filtering
+  - `school_id` (bigint, foreign key) - Associated school for filtering
 
   ### 2. `message_recipients`
   Tracks message recipients and their read status
@@ -79,8 +79,8 @@ BEGIN
     ALTER TABLE messages DROP COLUMN school_id;
   END IF;
 
-  -- Add column with correct type
-  ALTER TABLE messages ADD COLUMN school_id uuid;
+  -- Add column with correct type (bigint to match schools.id)
+  ALTER TABLE messages ADD COLUMN school_id bigint;
   ALTER TABLE messages ADD CONSTRAINT messages_school_id_fkey
     FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE SET NULL;
 END $$;
