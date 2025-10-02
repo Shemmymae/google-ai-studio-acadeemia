@@ -298,6 +298,13 @@ import ClassSchedulePage from './pages/academic/ClassSchedulePage';
 import TeacherSchedulePage from './pages/academic/TeacherSchedulePage';
 import PromotionPage from './pages/academic/PromotionPage';
 
+// Careers/ATS Pages
+import CareersManagementPage from './pages/company/CareersManagementPage';
+import JobPostingFormPage from './pages/company/JobPostingFormPage';
+import ApplicationsManagementPage from './pages/company/ApplicationsManagementPage';
+import InterviewSchedulingPage from './pages/company/InterviewSchedulingPage';
+import CareersAnalyticsDashboardPage from './pages/company/CareersAnalyticsDashboardPage';
+
 
 // 1. Authentication Context with Profile
 interface AuthContextType {
@@ -586,7 +593,15 @@ function App() {
               <Route path="/forms-manager/contact-us" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><ContactUsSubmissionsPage /></ProtectedRoute>} />
               <Route path="/forms-manager/demo-requests" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><DemoRequestsPage /></ProtectedRoute>} />
               <Route path="/forms-manager/newsletter" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><NewsletterSubscribersPage /></ProtectedRoute>} />
-              
+
+              {/* Careers/ATS Routes (Super Admin Only) */}
+              <Route path="/company/careers" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CareersManagementPage /></ProtectedRoute>} />
+              <Route path="/company/careers/new" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><JobPostingFormPage /></ProtectedRoute>} />
+              <Route path="/company/careers/jobs/:jobId/edit" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><JobPostingFormPage /></ProtectedRoute>} />
+              <Route path="/company/careers/jobs/:jobId/applications" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><ApplicationsManagementPage /></ProtectedRoute>} />
+              <Route path="/company/careers/applications/:applicationId/interview" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><InterviewSchedulingPage /></ProtectedRoute>} />
+              <Route path="/company/careers/analytics" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CareersAnalyticsDashboardPage /></ProtectedRoute>} />
+
               {/* School System Routes (Accessible to both Super Admins and School Staff) */}
               <Route path="/school" element={<ProtectedRoute allowedRoles={ALL_AUTHENTICATED}><SchoolPage /></ProtectedRoute>} />
               <Route path="/addon-manager" element={<ProtectedRoute allowedRoles={ALL_AUTHENTICATED}><AddonManagerPage /></ProtectedRoute>} />
