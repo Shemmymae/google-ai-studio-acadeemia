@@ -50,6 +50,7 @@ import SuperAdminLandingPage from './pages/SuperAdminLandingPage';
 import PesaPalCheckoutPage from './pages/PesaPalCheckoutPage';
 import PolarCheckoutPage from './pages/PolarCheckoutPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import MailboxPage from './pages/MailboxPage';
 
 // Inventory Pages
 import ProductPage from './pages/inventory/ProductPage';
@@ -697,6 +698,9 @@ function App() {
 
               {/* Award Routes */}
               <Route path="/award" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><AwardPage /></ProtectedRoute>} />
+
+              {/* Mailbox Route */}
+              <Route path="/mailbox" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><MailboxPage /></ProtectedRoute>} />
 
               {/* Fees Route */}
               <Route path="/fees/invoice/:studentId" element={<ProtectedRoute allowedRoles={SCHOOL_STAFF}><InvoiceHistoryPage /></ProtectedRoute>} />
