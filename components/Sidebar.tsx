@@ -233,7 +233,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
   const companyManagementNavItems: NavItemType[] = [
       { name: 'Company Dashboard', icon: icons.dashboard, path: '/company-dashboard' },
       { name: 'CRM', icon: icons.crm, path: '/crm' },
-      { name: 'Careers Management', icon: icons.hrm, children: [
+      { name: 'Careers Manager', icon: icons.hrm, children: [
           { name: 'Job Postings', path: '/company/careers' },
           { name: 'Analytics', path: '/company/careers/analytics' },
       ]},
@@ -246,7 +246,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Transactions', path: '/subscription/transactions' },
           { name: 'Offline Payments', path: '/subscription/offline-payments' },
       ]},
-      { name: 'Office Accounting', icon: icons.accounting, path: '/accounting' },
+      { name: 'Office Accounts', icon: icons.accounting, path: '/accounting' },
       { name: 'Integrations', icon: icons.integrations, path: '/integrations' },
       { name: 'Forms Manager', icon: icons.forms, children: [
           { name: 'Contact Us', path: '/forms-manager/contact-us' },
@@ -254,7 +254,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Newsletter', path: '/forms-manager/newsletter' },
       ]},
       { name: 'Settings', icon: icons.settings, children: [
-          { name: 'Currency Management', path: '/currency-management' },
+          { name: 'Currency Manager', path: '/currency-management' },
           { name: 'Global Settings', path: '/system-settings/global' },
           { name: 'School Settings', path: '/system-settings/school' },
           { name: 'Database Backup', path: '/system-settings/database-backup' },
@@ -385,7 +385,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Live Class', path: '/live-class/main' },
         { name: 'Live Class Reports', path: '/live-class/reports' },
     ]},
-    { name: 'Attachments Book', icon: icons.admission, children: [
+    { name: 'Attachments', icon: icons.admission, children: [
         { name: 'Upload Content', path: '/attachments/upload' },
         { name: 'Attachment Type', path: '/attachments/type' },
     ]},
@@ -415,7 +415,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Employee', path: '/attendance/employee' },
         { name: 'Exam', path: '/attendance/exam' },
     ]},
-    { name: 'Qr Code Attendance', icon: icons.dashboard, children: [
+    { name: 'Qr Attendance', icon: icons.dashboard, children: [
         { name: 'Attendance', path: '/qr-code-attendance/attendance' },
         { name: 'Settings', path: '/qr-code-attendance/settings' },
         { 
@@ -436,7 +436,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Event Type', path: '/events/type' },
         { name: 'Events', path: '/events/main' },
     ]},
-    { name: 'Bulk Sms And Email', icon: icons.forms, children: [
+    { name: 'Bulk Sms & Email', icon: icons.forms, children: [
         { name: 'Send Sms / Email', path: '/bulk-sms-email/send' },
         { name: 'Sms / Email Report', path: '/bulk-sms-email/report' },
         { name: 'Sms Template', path: '/bulk-sms-email/sms-template' },
@@ -445,7 +445,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Staff Birthday Wishes', path: '/bulk-sms-email/staff-birthday' },
     ]},
     { 
-        name: 'Student Accounting', 
+        name: 'Student Accounts', 
         icon: icons.accounting, 
         children: [
             { 
@@ -465,7 +465,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         ]
     },
     { 
-        name: 'Office Accounting', 
+        name: 'Office Accounts', 
         icon: icons.accounting, 
         children: [
             { name: 'Account', path: '/office-accounting/account' },
