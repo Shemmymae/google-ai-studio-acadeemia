@@ -233,6 +233,12 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
   const companyManagementNavItems: NavItemType[] = [
       { name: 'Company Dashboard', icon: icons.dashboard, path: '/company-dashboard' },
       { name: 'CRM', icon: icons.crm, path: '/crm' },
+      { name: 'Blog Manager', icon: icons.courses, children: [
+          { name: 'Dashboard', path: '/company/blog-manager' },
+          { name: 'Posts', path: '/company/blog-manager/posts' },
+          { name: 'Categories & Tags', path: '/company/blog-manager/categories' },
+          { name: 'Comments', path: '/company/blog-manager/comments' },
+      ]},
       { name: 'Careers Manager', icon: icons.hrm, children: [
           { name: 'Job Postings', path: '/company/careers' },
           { name: 'Analytics', path: '/company/careers/analytics' },
