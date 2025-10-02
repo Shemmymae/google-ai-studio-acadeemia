@@ -415,7 +415,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
         { name: 'Employee', path: '/attendance/employee' },
         { name: 'Exam', path: '/attendance/exam' },
     ]},
-    { name: 'Qr Code Attendance', icon: icons.dashboard, children: [
+    { name: 'Qr Attendance', icon: icons.dashboard, children: [
         { name: 'Attendance', path: '/qr-code-attendance/attendance' },
         { name: 'Settings', path: '/qr-code-attendance/settings' },
         { 
