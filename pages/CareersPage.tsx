@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import LandingLayout from '../components/LandingLayout';
+import JobApplicationModal from '../components/JobApplicationModal';
 import { supabase } from '../supabase';
 
 interface Job {
@@ -26,7 +27,7 @@ const PageHero = ({ title, subtitle }: { title: string, subtitle: string }) => (
     </div>
 );
 
-const JobOpening = ({ job }: { job: Job }) => {
+const JobOpening = ({ job, onApply }: { job: Job; onApply: (job: Job) => void }) => {
     const getSalaryDisplay = () => {
         if (job.salary_range) return job.salary_range;
         if (job.salary_min && job.salary_max) {
@@ -56,19 +57,19 @@ const JobOpening = ({ job }: { job: Job }) => {
                     </p>
                 </div>
                 <div className="flex-shrink-0 w-full sm:w-auto">
-                    <a
-                        href={`mailto:careers@acadeemia.com?subject=Application for ${job.title}`}
-                        className="block text-center bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-hover transition-colors"
+                    <button
+                        onClick={() => onApply(job)}
+                        className="block w-full text-center bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-hover transition-colors"
                     >
                         Apply Now
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     );
 };
 
-const JobSection = ({ title, jobs }: { title: string, jobs: Job[] }) => {
+const JobSection = ({ title, jobs, onApply }: { title: string; jobs: Job[]; onApply: (job: Job) => void }) => {
     if (jobs.length === 0) return null;
 
     return (
@@ -76,7 +77,7 @@ const JobSection = ({ title, jobs }: { title: string, jobs: Job[] }) => {
             <h2 className="text-3xl font-bold text-text-primary dark:text-gray-100 mb-6">{title}</h2>
             <div className="space-y-6">
                 {jobs.map((job) => (
-                    <JobOpening key={job.id} job={job} />
+                    <JobOpening key={job.id} job={job} onApply={onApply} />
                 ))}
             </div>
         </div>
@@ -87,10 +88,22 @@ const JobSection = ({ title, jobs }: { title: string, jobs: Job[] }) => {
 const CareersPage = () => {
     const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         fetchJobs();
     }, []);
+
+    const handleApply = (job: Job) => {
+        setSelectedJob(job);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedJob(null);
+    };
 
     const fetchJobs = async () => {
         try {
@@ -159,12 +172,21 @@ const CareersPage = () => {
                                     key={department}
                                     title={department}
                                     jobs={groupedJobs[department]}
+                                    onApply={handleApply}
                                 />
                             ))}
                         </>
                     )}
                 </div>
             </section>
+
+            {selectedJob && (
+                <JobApplicationModal
+                    job={selectedJob}
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                />
+            )}
         </LandingLayout>
     );
 };
