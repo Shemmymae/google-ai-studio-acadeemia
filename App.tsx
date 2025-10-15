@@ -33,6 +33,7 @@ import WhyAcadeemiaPage from './pages/WhyAcadeemiaPage';
 import BlogListPage from './pages/BlogListPage';
 import BlogPostPage from './pages/BlogPostPage';
 import CareersPage from './pages/CareersPage';
+import AffiliatePicksPage from './pages/AffiliatePicksPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import CurrencyManagementPage from './pages/CurrencyManagementPage';
 import DemoPage from './pages/DemoPage';
@@ -483,6 +484,7 @@ function App() {
               <Route path="/blog" element={<BlogListPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/careers" element={<CareersPage />} />
+              <Route path="/affiliate-picks" element={<AffiliatePicksPage />} />
               <Route path="/help-center" element={<HelpCenterPage />} />
               <Route path="/faqs" element={<FAQsPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
