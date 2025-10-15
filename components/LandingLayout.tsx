@@ -125,6 +125,7 @@ const Header = () => {
                     <div className="absolute top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 z-20">
                         <Link to="/about" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">About Us</Link>
                         <Link to="/why-acadeemia" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Why Acadeemia?</Link>
+                        <Link to="/affiliate-picks" onClick={() => setCompanyDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Affiliate Picks</Link>
                     </div>
                 )}
             </div>
@@ -186,6 +187,7 @@ const Header = () => {
                         <div className="pl-4 pt-2 space-y-2">
                             <NavLink to="/about" onClick={closeAllMenus} className="block">About Us</NavLink>
                             <NavLink to="/why-acadeemia" onClick={closeAllMenus} className="block">Why Acadeemia?</NavLink>
+                            <NavLink to="/affiliate-picks" onClick={closeAllMenus} className="block">Affiliate Picks</NavLink>
                         </div>
                     )}
                 </div>
