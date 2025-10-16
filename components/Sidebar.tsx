@@ -243,6 +243,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen }: { isSidebarOpen: boolean, se
           { name: 'Job Postings', path: '/company/careers' },
           { name: 'Analytics', path: '/company/careers/analytics' },
       ]},
+      { name: 'Affiliate Tools', icon: icons.courses, path: '/company/affiliate-tools' },
       { name: 'Subscription', icon: icons.subscription, children: [
           { name: 'Subscriptions', path: '/subscription/list' },
           { name: 'Pending Requests', path: '/subscription/pending' },
