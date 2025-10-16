@@ -306,6 +306,7 @@ import JobPostingFormPage from './pages/company/JobPostingFormPage';
 import ApplicationsManagementPage from './pages/company/ApplicationsManagementPage';
 import InterviewSchedulingPage from './pages/company/InterviewSchedulingPage';
 import CareersAnalyticsDashboardPage from './pages/company/CareersAnalyticsDashboardPage';
+import AffiliateToolsPage from './pages/company/AffiliateToolsPage';
 
 // Blog Manager Pages
 import BlogManagerDashboardPage from './pages/company/BlogManagerDashboardPage';
@@ -611,6 +612,7 @@ function App() {
               <Route path="/company/careers/jobs/:jobId/applications" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><ApplicationsManagementPage /></ProtectedRoute>} />
               <Route path="/company/careers/applications/:applicationId/interview" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><InterviewSchedulingPage /></ProtectedRoute>} />
               <Route path="/company/careers/analytics" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><CareersAnalyticsDashboardPage /></ProtectedRoute>} />
+              <Route path="/company/affiliate-tools" element={<ProtectedRoute allowedRoles={SUPER_ADMIN}><AffiliateToolsPage /></ProtectedRoute>} />
 
               {/* School System Routes (Accessible to both Super Admins and School Staff) */}
               <Route path="/school" element={<ProtectedRoute allowedRoles={ALL_AUTHENTICATED}><SchoolPage /></ProtectedRoute>} />
