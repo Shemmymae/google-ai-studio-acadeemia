@@ -133,9 +133,12 @@ const BlogPostEditorPage = () => {
     setSaving(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+
       const postData: any = {
         ...formData,
         updated_at: new Date().toISOString(),
+        author_id: user?.id || null,
       };
 
       if (publishNow) {
@@ -182,10 +185,12 @@ const BlogPostEditorPage = () => {
           .insert(selectedTags.map(tagId => ({ post_id: postId, tag_id: tagId })));
       }
 
+      alert('Post saved successfully!');
       navigate('/company/blog-manager/posts');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving post:', error);
-      alert('Failed to save post');
+      const errorMessage = error?.message || 'Unknown error occurred';
+      alert(`Failed to save post: ${errorMessage}\n\nPlease check the console for more details.`);
     } finally {
       setSaving(false);
     }
