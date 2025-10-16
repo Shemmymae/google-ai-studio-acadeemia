@@ -158,46 +158,62 @@ const Header = () => {
         </div>
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-background dark:bg-gray-900 absolute top-full left-0 w-full shadow-lg border-t border-gray-200 dark:border-gray-800">
-             <div className="px-6 py-4 space-y-4">
+          <div className="lg:hidden bg-background dark:bg-gray-900 absolute top-full left-0 w-full shadow-lg border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-80px)] overflow-y-auto">
+             <div className="px-6 py-4 space-y-3">
                 {/* Mobile product dropdown */}
-                <div>
-                    <button onClick={() => setMobileProductOpen(!isMobileProductOpen)} className="w-full flex justify-between items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium">
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <button onClick={() => setMobileProductOpen(!isMobileProductOpen)} className="w-full flex justify-between items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium py-2">
                         Product
                         <svg className={`w-4 h-4 ml-1 transform transition-transform duration-200 ${isMobileProductOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     {isMobileProductOpen && (
-                        <div className="pl-4 pt-2 space-y-2">
-                             <NavLink to="/modules" onClick={closeAllMenus} className="block">Modules</NavLink>
-                             <NavLink to="/versions" onClick={closeAllMenus} className="block">Deployment</NavLink>
+                        <div className="pl-4 pt-3 pb-2 space-y-3">
+                             <Link to="/modules" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Modules</Link>
+                             <Link to="/versions" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Deployment</Link>
                         </div>
                     )}
                 </div>
-                <NavLink to="/pricing" onClick={closeAllMenus}>Pricing</NavLink>
-                <NavLink to="/demo" onClick={closeAllMenus}>Demo</NavLink>
-                <NavLink to="/store" onClick={closeAllMenus}>Store</NavLink>
-                <NavLink to="/blog" onClick={closeAllMenus}>Blog</NavLink>
+
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <Link to="/pricing" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors font-medium">Pricing</Link>
+                </div>
+
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <Link to="/demo" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors font-medium">Demo</Link>
+                </div>
+
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <Link to="/store" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors font-medium">Store</Link>
+                </div>
+
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <Link to="/blog" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors font-medium">Blog</Link>
+                </div>
+
                  {/* Mobile company dropdown */}
-                <div>
-                    <button onClick={() => setMobileCompanyOpen(!isMobileCompanyOpen)} className="w-full flex justify-between items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium">
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <button onClick={() => setMobileCompanyOpen(!isMobileCompanyOpen)} className="w-full flex justify-between items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium py-2">
                         Company
                          <svg className={`w-4 h-4 ml-1 transform transition-transform duration-200 ${isMobileCompanyOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     {isMobileCompanyOpen && (
-                        <div className="pl-4 pt-2 space-y-2">
-                            <NavLink to="/about" onClick={closeAllMenus} className="block">About Us</NavLink>
-                            <NavLink to="/why-acadeemia" onClick={closeAllMenus} className="block">Why Acadeemia?</NavLink>
-                            <NavLink to="/affiliate-picks" onClick={closeAllMenus} className="block">Affiliate Picks</NavLink>
+                        <div className="pl-4 pt-3 pb-2 space-y-3">
+                            <Link to="/about" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">About Us</Link>
+                            <Link to="/why-acadeemia" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Why Acadeemia?</Link>
+                            <Link to="/affiliate-picks" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Affiliate Picks</Link>
                         </div>
                     )}
                 </div>
-                <NavLink to="/contact" onClick={closeAllMenus}>Contact Us</NavLink>
 
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-4">
-                     <Link to="/login" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 font-semibold hover:text-primary transition-colors">
+                <div className="py-2 border-b border-gray-100 dark:border-gray-800">
+                    <Link to="/contact" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors font-medium">Contact Us</Link>
+                </div>
+
+                <div className="pt-4 pb-2 space-y-3">
+                     <Link to="/login" onClick={closeAllMenus} className="block text-center text-text-primary dark:text-gray-200 font-semibold hover:text-primary transition-colors py-2 border border-gray-300 dark:border-gray-600 rounded-lg">
                         Log In
                     </Link>
-                    <Link to="/demo" onClick={closeAllMenus} className="block w-full text-center bg-primary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary-hover transition-colors">
+                    <Link to="/demo" onClick={closeAllMenus} className="block w-full text-center bg-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-primary-hover transition-colors">
                         Request a Demo
                     </Link>
                 </div>
