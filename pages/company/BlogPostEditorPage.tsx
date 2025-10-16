@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import RichTextEditor from '../../components/RichTextEditor';
 import { supabase } from '../../supabase';
 
 interface Category {
@@ -256,14 +257,14 @@ const BlogPostEditorPage = () => {
                   <label className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
                     Content *
                   </label>
-                  <textarea
+                  <RichTextEditor
                     value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    rows={15}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 font-mono"
-                    placeholder="Write your post content here (Markdown supported)"
-                    required
+                    onChange={(content) => setFormData({ ...formData, content })}
+                    placeholder="Write your post content here..."
                   />
+                  <p className="text-xs text-text-secondary dark:text-gray-400 mt-2">
+                    Use the toolbar above to format your content with headings, bold text, links, images, and more.
+                  </p>
                 </div>
               </div>
             </div>
