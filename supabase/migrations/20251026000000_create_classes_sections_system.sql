@@ -3,21 +3,11 @@
 
   ## Overview
   This migration creates the academic class and section management system for schools.
-  It includes schools, classes, and sections with proper relationships.
+  It creates classes and sections tables that reference the existing schools table.
 
   ## New Tables
 
-  ### 1. `schools`
-  Stores school/campus information
-  - `id` (uuid, primary key) - Unique school identifier
-  - `name` (text, not null) - School name
-  - `code` (text, unique) - School code
-  - `address` (text) - School address
-  - `is_active` (boolean, default true) - Active status
-  - `created_at` (timestamptz, default now()) - Creation timestamp
-  - `updated_at` (timestamptz, default now()) - Last update timestamp
-
-  ### 2. `classes`
+  ### 1. `classes`
   Stores class information
   - `id` (uuid, primary key) - Unique class identifier
   - `school_id` (uuid, not null) - Foreign key to schools
@@ -27,7 +17,7 @@
   - `created_at` (timestamptz, default now()) - Creation timestamp
   - `updated_at` (timestamptz, default now()) - Last update timestamp
 
-  ### 3. `sections`
+  ### 2. `sections`
   Stores section information with capacity
   - `id` (uuid, primary key) - Unique section identifier
   - `school_id` (uuid, not null) - Foreign key to schools
@@ -45,17 +35,6 @@
   - Index on school_id for foreign key relationships
   - Index on class_numeric for sorting
 */
-
--- Create schools table
-CREATE TABLE IF NOT EXISTS schools (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
-  code text UNIQUE,
-  address text,
-  is_active boolean DEFAULT true,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
 
 -- Create classes table
 CREATE TABLE IF NOT EXISTS classes (
@@ -84,31 +63,8 @@ CREATE INDEX IF NOT EXISTS idx_classes_numeric ON classes(class_numeric);
 CREATE INDEX IF NOT EXISTS idx_sections_school_id ON sections(school_id);
 
 -- Enable Row Level Security
-ALTER TABLE schools ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies for schools
-CREATE POLICY "Authenticated users can view schools"
-  ON schools FOR SELECT
-  TO authenticated
-  USING (true);
-
-CREATE POLICY "Authenticated users can insert schools"
-  ON schools FOR INSERT
-  TO authenticated
-  WITH CHECK (true);
-
-CREATE POLICY "Authenticated users can update schools"
-  ON schools FOR UPDATE
-  TO authenticated
-  USING (true)
-  WITH CHECK (true);
-
-CREATE POLICY "Authenticated users can delete schools"
-  ON schools FOR DELETE
-  TO authenticated
-  USING (true);
 
 -- RLS Policies for classes
 CREATE POLICY "Authenticated users can view classes"
@@ -154,49 +110,53 @@ CREATE POLICY "Authenticated users can delete sections"
   TO authenticated
   USING (true);
 
--- Insert sample schools
-INSERT INTO schools (name, code, address) VALUES
-('Icon School & College', 'ISC001', '123 Education Street, City Center'),
-('Oxford International', 'OXF001', '456 Academic Avenue, Downtown');
+-- Insert sample schools (only if they don't exist)
+INSERT INTO schools (name, address)
+SELECT 'Icon School & College', '123 Education Street, City Center'
+WHERE NOT EXISTS (SELECT 1 FROM schools WHERE name = 'Icon School & College');
+
+INSERT INTO schools (name, address)
+SELECT 'Oxford International', '456 Academic Avenue, Downtown'
+WHERE NOT EXISTS (SELECT 1 FROM schools WHERE name = 'Oxford International');
 
 -- Insert sample sections
 INSERT INTO sections (school_id, name, capacity)
-SELECT s.id, 'A', 100 FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'A', 100 FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'B', 100 FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'B', 100 FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'A', 35 FROM schools s WHERE s.code = 'OXF001'
+SELECT s.id, 'A', 35 FROM schools s WHERE s.name = 'Oxford International'
 UNION ALL
-SELECT s.id, 'B', 30 FROM schools s WHERE s.code = 'OXF001';
+SELECT s.id, 'B', 30 FROM schools s WHERE s.name = 'Oxford International';
 
 -- Insert sample classes
 INSERT INTO classes (school_id, name, class_numeric, section)
-SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Eight', 8, 'B' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Eight', 8, 'B' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Nine', 9, 'A' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Nine', 9, 'A' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Nine', 9, 'B' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Nine', 9, 'B' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Ten', 10, 'A' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Ten', 10, 'A' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Ten', 10, 'B' FROM schools s WHERE s.code = 'ISC001'
+SELECT s.id, 'Ten', 10, 'B' FROM schools s WHERE s.name = 'Icon School & College'
 UNION ALL
-SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.code = 'OXF001'
+SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.name = 'Oxford International'
 UNION ALL
-SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.code = 'OXF001'
+SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.name = 'Oxford International'
 UNION ALL
-SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.code = 'OXF001'
+SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.name = 'Oxford International'
 UNION ALL
-SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.code = 'OXF001'
+SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.name = 'Oxford International'
 UNION ALL
-SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.code = 'ISC001';
+SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.name = 'Icon School & College';
