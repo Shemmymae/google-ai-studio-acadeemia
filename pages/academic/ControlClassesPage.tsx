@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { supabase } from '../../supabase';
 
-type Branch = {
+type School = {
   id: string;
   name: string;
   code: string;
@@ -10,39 +10,39 @@ type Branch = {
 
 type Class = {
   id: string;
-  branch_id: string;
+  school_id: string;
   name: string;
   class_numeric: number;
   section: string;
   created_at: string;
-  branch?: Branch;
+  school?: School;
 };
 
 type Section = {
   id: string;
-  branch_id: string;
+  school_id: string;
   name: string;
   capacity: number;
   created_at: string;
-  branch?: Branch;
+  school?: School;
 };
 
 const ControlClassesPage = () => {
   const [activeTab, setActiveTab] = useState<'class' | 'section'>('class');
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const [schools, setSchools] = useState<School[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [classForm, setClassForm] = useState({
-    branch_id: '',
+    school_id: '',
     name: '',
     class_numeric: '',
     section: ''
   });
 
   const [sectionForm, setSectionForm] = useState({
-    branch_id: '',
+    school_id: '',
     name: '',
     capacity: ''
   });
@@ -57,18 +57,18 @@ const ControlClassesPage = () => {
     try {
       setLoading(true);
 
-      const { data: branchesData, error: branchesError } = await supabase
-        .from('branches')
+      const { data: schoolsData, error: schoolsError } = await supabase
+        .from('schools')
         .select('*')
         .eq('is_active', true)
         .order('name');
 
-      if (branchesError) throw branchesError;
-      setBranches(branchesData || []);
+      if (schoolsError) throw schoolsError;
+      setSchools(schoolsData || []);
 
       const { data: classesData, error: classesError } = await supabase
         .from('classes')
-        .select('*, branch:branches(id, name, code)')
+        .select('*, school:schools(id, name, code)')
         .order('class_numeric');
 
       if (classesError) throw classesError;
@@ -76,7 +76,7 @@ const ControlClassesPage = () => {
 
       const { data: sectionsData, error: sectionsError } = await supabase
         .from('sections')
-        .select('*, branch:branches(id, name, code)')
+        .select('*, school:schools(id, name, code)')
         .order('name');
 
       if (sectionsError) throw sectionsError;
@@ -91,7 +91,7 @@ const ControlClassesPage = () => {
   const handleClassSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!classForm.branch_id || !classForm.name || !classForm.class_numeric || !classForm.section) {
+    if (!classForm.school_id || !classForm.name || !classForm.class_numeric || !classForm.section) {
       alert('Please fill in all required fields');
       return;
     }
@@ -101,7 +101,7 @@ const ControlClassesPage = () => {
         const { error } = await supabase
           .from('classes')
           .update({
-            branch_id: classForm.branch_id,
+            school_id: classForm.school_id,
             name: classForm.name,
             class_numeric: parseInt(classForm.class_numeric),
             section: classForm.section
@@ -113,7 +113,7 @@ const ControlClassesPage = () => {
         const { error } = await supabase
           .from('classes')
           .insert({
-            branch_id: classForm.branch_id,
+            school_id: classForm.school_id,
             name: classForm.name,
             class_numeric: parseInt(classForm.class_numeric),
             section: classForm.section
@@ -122,7 +122,7 @@ const ControlClassesPage = () => {
         if (error) throw error;
       }
 
-      setClassForm({ branch_id: '', name: '', class_numeric: '', section: '' });
+      setClassForm({ school_id: '', name: '', class_numeric: '', section: '' });
       setEditingId(null);
       fetchData();
     } catch (error) {
@@ -134,7 +134,7 @@ const ControlClassesPage = () => {
   const handleSectionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!sectionForm.branch_id || !sectionForm.name) {
+    if (!sectionForm.school_id || !sectionForm.name) {
       alert('Please fill in all required fields');
       return;
     }
@@ -144,7 +144,7 @@ const ControlClassesPage = () => {
         const { error } = await supabase
           .from('sections')
           .update({
-            branch_id: sectionForm.branch_id,
+            school_id: sectionForm.school_id,
             name: sectionForm.name,
             capacity: parseInt(sectionForm.capacity) || 0
           })
@@ -155,7 +155,7 @@ const ControlClassesPage = () => {
         const { error } = await supabase
           .from('sections')
           .insert({
-            branch_id: sectionForm.branch_id,
+            school_id: sectionForm.school_id,
             name: sectionForm.name,
             capacity: parseInt(sectionForm.capacity) || 0
           });
@@ -163,7 +163,7 @@ const ControlClassesPage = () => {
         if (error) throw error;
       }
 
-      setSectionForm({ branch_id: '', name: '', capacity: '' });
+      setSectionForm({ school_id: '', name: '', capacity: '' });
       setEditingId(null);
       fetchData();
     } catch (error) {
@@ -201,7 +201,7 @@ const ControlClassesPage = () => {
   const handleEditClass = (classItem: Class) => {
     setEditingId(classItem.id);
     setClassForm({
-      branch_id: classItem.branch_id,
+      school_id: classItem.school_id,
       name: classItem.name,
       class_numeric: classItem.class_numeric.toString(),
       section: classItem.section
@@ -211,7 +211,7 @@ const ControlClassesPage = () => {
   const handleEditSection = (section: Section) => {
     setEditingId(section.id);
     setSectionForm({
-      branch_id: section.branch_id,
+      school_id: section.school_id,
       name: section.name,
       capacity: section.capacity.toString()
     });
@@ -274,18 +274,18 @@ const ControlClassesPage = () => {
                 <form onSubmit={handleClassSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-text-primary dark:text-gray-100 mb-2">
-                      Branch <span className="text-red-500">*</span>
+                      School <span className="text-red-500">*</span>
                     </label>
                     <select
-                      value={classForm.branch_id}
-                      onChange={(e) => setClassForm({ ...classForm, branch_id: e.target.value })}
+                      value={classForm.school_id}
+                      onChange={(e) => setClassForm({ ...classForm, school_id: e.target.value })}
                       className="form-select"
                       required
                     >
                       <option value="">Select</option>
-                      {branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
+                      {schools.map((school) => (
+                        <option key={school.id} value={school.id}>
+                          {school.name}
                         </option>
                       ))}
                     </select>
@@ -327,8 +327,8 @@ const ControlClassesPage = () => {
                       value={classForm.section}
                       onChange={(e) => setClassForm({ ...classForm, section: e.target.value })}
                       className="form-input"
-                      placeholder={classForm.branch_id ? 'e.g., A, B' : 'First Select The Branch'}
-                      disabled={!classForm.branch_id}
+                      placeholder={classForm.school_id ? 'e.g., A, B' : 'First Select The School'}
+                      disabled={!classForm.school_id}
                       required
                     />
                   </div>
@@ -348,7 +348,7 @@ const ControlClassesPage = () => {
                         type="button"
                         onClick={() => {
                           setEditingId(null);
-                          setClassForm({ branch_id: '', name: '', class_numeric: '', section: '' });
+                          setClassForm({ school_id: '', name: '', class_numeric: '', section: '' });
                         }}
                         className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
@@ -371,7 +371,7 @@ const ControlClassesPage = () => {
                     <thead className="bg-gray-200 dark:bg-gray-800">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">#</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Branch</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">School</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Class Name</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Class Numeric</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Section</th>
@@ -395,7 +395,7 @@ const ControlClassesPage = () => {
                         classes.map((classItem, index) => (
                           <tr key={classItem.id} className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{index + 1}</td>
-                            <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{classItem.branch?.name}</td>
+                            <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{classItem.school?.name}</td>
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{classItem.name}</td>
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{classItem.class_numeric}</td>
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{classItem.section}</td>
@@ -441,18 +441,18 @@ const ControlClassesPage = () => {
                 <form onSubmit={handleSectionSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-text-primary dark:text-gray-100 mb-2">
-                      Branch <span className="text-red-500">*</span>
+                      School <span className="text-red-500">*</span>
                     </label>
                     <select
-                      value={sectionForm.branch_id}
-                      onChange={(e) => setSectionForm({ ...sectionForm, branch_id: e.target.value })}
+                      value={sectionForm.school_id}
+                      onChange={(e) => setSectionForm({ ...sectionForm, school_id: e.target.value })}
                       className="form-select"
                       required
                     >
                       <option value="">Select</option>
-                      {branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
+                      {schools.map((school) => (
+                        <option key={school.id} value={school.id}>
+                          {school.name}
                         </option>
                       ))}
                     </select>
@@ -500,7 +500,7 @@ const ControlClassesPage = () => {
                         type="button"
                         onClick={() => {
                           setEditingId(null);
-                          setSectionForm({ branch_id: '', name: '', capacity: '' });
+                          setSectionForm({ school_id: '', name: '', capacity: '' });
                         }}
                         className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
@@ -523,7 +523,7 @@ const ControlClassesPage = () => {
                     <thead className="bg-gray-200 dark:bg-gray-800">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">#</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Branch</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">School</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Section Name</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Capacity</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-text-primary dark:text-gray-100 uppercase">Action</th>
@@ -546,7 +546,7 @@ const ControlClassesPage = () => {
                         sections.map((section, index) => (
                           <tr key={section.id} className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{index + 1}</td>
-                            <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{section.branch?.name}</td>
+                            <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{section.school?.name}</td>
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{section.name}</td>
                             <td className="px-4 py-3 text-sm text-text-secondary dark:text-gray-400">{section.capacity}</td>
                             <td className="px-4 py-3">
