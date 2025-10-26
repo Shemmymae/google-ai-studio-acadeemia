@@ -3,16 +3,16 @@
 
   ## Overview
   This migration creates the academic class and section management system for schools.
-  It includes branches, classes, and sections with proper relationships.
+  It includes schools, classes, and sections with proper relationships.
 
   ## New Tables
 
-  ### 1. `branches`
-  Stores school branch/campus information
-  - `id` (uuid, primary key) - Unique branch identifier
-  - `name` (text, not null) - Branch name
-  - `code` (text, unique) - Branch code
-  - `address` (text) - Branch address
+  ### 1. `schools`
+  Stores school/campus information
+  - `id` (uuid, primary key) - Unique school identifier
+  - `name` (text, not null) - School name
+  - `code` (text, unique) - School code
+  - `address` (text) - School address
   - `is_active` (boolean, default true) - Active status
   - `created_at` (timestamptz, default now()) - Creation timestamp
   - `updated_at` (timestamptz, default now()) - Last update timestamp
@@ -20,7 +20,7 @@
   ### 2. `classes`
   Stores class information
   - `id` (uuid, primary key) - Unique class identifier
-  - `branch_id` (uuid, not null) - Foreign key to branches
+  - `school_id` (uuid, not null) - Foreign key to schools
   - `name` (text, not null) - Class name (e.g., "Six", "Seven")
   - `class_numeric` (integer, not null) - Numeric value for sorting
   - `section` (text, not null) - Section name (e.g., "A", "B")
@@ -30,7 +30,7 @@
   ### 3. `sections`
   Stores section information with capacity
   - `id` (uuid, primary key) - Unique section identifier
-  - `branch_id` (uuid, not null) - Foreign key to branches
+  - `school_id` (uuid, not null) - Foreign key to schools
   - `name` (text, not null) - Section name (e.g., "A", "B")
   - `capacity` (integer, default 0) - Maximum students allowed
   - `created_at` (timestamptz, default now()) - Creation timestamp
@@ -42,12 +42,12 @@
   - Public read access disabled
 
   ## Indexes
-  - Index on branch_id for foreign key relationships
+  - Index on school_id for foreign key relationships
   - Index on class_numeric for sorting
 */
 
--- Create branches table
-CREATE TABLE IF NOT EXISTS branches (
+-- Create schools table
+CREATE TABLE IF NOT EXISTS schools (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   code text UNIQUE,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS branches (
 -- Create classes table
 CREATE TABLE IF NOT EXISTS classes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  branch_id uuid NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+  school_id uuid NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
   name text NOT NULL,
   class_numeric integer NOT NULL,
   section text NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS classes (
 -- Create sections table
 CREATE TABLE IF NOT EXISTS sections (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  branch_id uuid NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+  school_id uuid NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
   name text NOT NULL,
   capacity integer DEFAULT 0,
   created_at timestamptz DEFAULT now(),
@@ -79,34 +79,34 @@ CREATE TABLE IF NOT EXISTS sections (
 );
 
 -- Create indexes
-CREATE INDEX IF NOT EXISTS idx_classes_branch_id ON classes(branch_id);
+CREATE INDEX IF NOT EXISTS idx_classes_school_id ON classes(school_id);
 CREATE INDEX IF NOT EXISTS idx_classes_numeric ON classes(class_numeric);
-CREATE INDEX IF NOT EXISTS idx_sections_branch_id ON sections(branch_id);
+CREATE INDEX IF NOT EXISTS idx_sections_school_id ON sections(school_id);
 
 -- Enable Row Level Security
-ALTER TABLE branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE schools ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies for branches
-CREATE POLICY "Authenticated users can view branches"
-  ON branches FOR SELECT
+-- RLS Policies for schools
+CREATE POLICY "Authenticated users can view schools"
+  ON schools FOR SELECT
   TO authenticated
   USING (true);
 
-CREATE POLICY "Authenticated users can insert branches"
-  ON branches FOR INSERT
+CREATE POLICY "Authenticated users can insert schools"
+  ON schools FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
-CREATE POLICY "Authenticated users can update branches"
-  ON branches FOR UPDATE
+CREATE POLICY "Authenticated users can update schools"
+  ON schools FOR UPDATE
   TO authenticated
   USING (true)
   WITH CHECK (true);
 
-CREATE POLICY "Authenticated users can delete branches"
-  ON branches FOR DELETE
+CREATE POLICY "Authenticated users can delete schools"
+  ON schools FOR DELETE
   TO authenticated
   USING (true);
 
@@ -154,49 +154,49 @@ CREATE POLICY "Authenticated users can delete sections"
   TO authenticated
   USING (true);
 
--- Insert sample branches
-INSERT INTO branches (name, code, address) VALUES
+-- Insert sample schools
+INSERT INTO schools (name, code, address) VALUES
 ('Icon School & College', 'ISC001', '123 Education Street, City Center'),
 ('Oxford International', 'OXF001', '456 Academic Avenue, Downtown');
 
 -- Insert sample sections
-INSERT INTO sections (branch_id, name, capacity)
-SELECT b.id, 'A', 100 FROM branches b WHERE b.code = 'ISC001'
+INSERT INTO sections (school_id, name, capacity)
+SELECT s.id, 'A', 100 FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'B', 100 FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'B', 100 FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'A', 35 FROM branches b WHERE b.code = 'OXF001'
+SELECT s.id, 'A', 35 FROM schools s WHERE s.code = 'OXF001'
 UNION ALL
-SELECT b.id, 'B', 30 FROM branches b WHERE b.code = 'OXF001';
+SELECT s.id, 'B', 30 FROM schools s WHERE s.code = 'OXF001';
 
 -- Insert sample classes
-INSERT INTO classes (branch_id, name, class_numeric, section)
-SELECT b.id, 'Six', 6, 'A' FROM branches b WHERE b.code = 'ISC001'
+INSERT INTO classes (school_id, name, class_numeric, section)
+SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Six', 6, 'B' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Seven', 7, 'A' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Seven', 7, 'B' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Eight', 8, 'A' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Eight', 8, 'B' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Eight', 8, 'B' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Nine', 9, 'A' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Nine', 9, 'A' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Nine', 9, 'B' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Nine', 9, 'B' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Ten', 10, 'A' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Ten', 10, 'A' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Ten', 10, 'B' FROM branches b WHERE b.code = 'ISC001'
+SELECT s.id, 'Ten', 10, 'B' FROM schools s WHERE s.code = 'ISC001'
 UNION ALL
-SELECT b.id, 'Six', 6, 'A' FROM branches b WHERE b.code = 'OXF001'
+SELECT s.id, 'Six', 6, 'A' FROM schools s WHERE s.code = 'OXF001'
 UNION ALL
-SELECT b.id, 'Six', 6, 'B' FROM branches b WHERE b.code = 'OXF001'
+SELECT s.id, 'Six', 6, 'B' FROM schools s WHERE s.code = 'OXF001'
 UNION ALL
-SELECT b.id, 'Seven', 7, 'A' FROM branches b WHERE b.code = 'OXF001'
+SELECT s.id, 'Seven', 7, 'A' FROM schools s WHERE s.code = 'OXF001'
 UNION ALL
-SELECT b.id, 'Seven', 7, 'B' FROM branches b WHERE b.code = 'OXF001'
+SELECT s.id, 'Seven', 7, 'B' FROM schools s WHERE s.code = 'OXF001'
 UNION ALL
-SELECT b.id, 'Eight', 8, 'A' FROM branches b WHERE b.code = 'ISC001';
+SELECT s.id, 'Eight', 8, 'A' FROM schools s WHERE s.code = 'ISC001';
