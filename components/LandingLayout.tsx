@@ -45,7 +45,8 @@ const Header = () => {
     const [isMobileProductOpen, setMobileProductOpen] = useState(false);
     const [isMobileCompanyOpen, setMobileCompanyOpen] = useState(false);
 
-    const companyDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const productDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);  
+  const companyDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const { theme } = useTheme();
     const { cart } = useCart();
@@ -67,7 +68,9 @@ const Header = () => {
             if (productDropdownTimeoutRef.current) {
                 clearTimeout(productDropdownTimeoutRef.current);
             }
-          
+            if (companyDropdownTimeoutRef.current) {
+                clearTimeout(companyDropdownTimeoutRef.current);
+            }
         };
     }, []);
 
@@ -79,11 +82,24 @@ const Header = () => {
           </Link>
           <nav className="hidden lg:flex items-center space-x-8">
             <div 
-                className="relative" 
-                onMouseEnter={() => { setProductDropdownOpen(true); setCompanyDropdownOpen(false); }}
-                onMouseLeave={() => setProductDropdownOpen(false)}
-        
-            >
+              className="relative" 
+              onMouseEnter={() => {
+                // Clear previous timeout if any
+                if (productDropdownTimeoutRef.current) {
+                  clearTimeout(productDropdownTimeoutRef.current);
+                  productDropdownTimeoutRef.current = null;
+                }
+                setProductDropdownOpen(true);
+                setCompanyDropdownOpen(false);
+            }}
+            onMouseLeave={() => {
+              // Set delay before closing
+              productDropdownTimeoutRef.current = setTimeout(() => {
+                setProductDropdownOpen(false);
+              }, 300); // same 300ms delay as company
+            }}
+        >
+
                 <button 
                     className="flex items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium"
                 >
