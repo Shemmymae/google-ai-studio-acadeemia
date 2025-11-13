@@ -66,7 +66,7 @@ const Header = () => {
         return () => {
             if (productDropdownTimeoutRef.current) {
                 clearTimeout(productDropdownTimeoutRef.current);
-            }300); // 300ms delay
+            }
         };
     }, []);
 
