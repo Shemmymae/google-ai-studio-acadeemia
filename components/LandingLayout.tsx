@@ -82,7 +82,7 @@ const Header = () => {
                 className="relative" 
                 onMouseEnter={() => { setProductDropdownOpen(true); setCompanyDropdownOpen(false); }}
                 onMouseLeave={() => setProductDropdownOpen(false)}
-              300); // 300ms delay
+        
             >
                 <button 
                     className="flex items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium"
