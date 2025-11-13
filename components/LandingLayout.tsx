@@ -65,9 +65,9 @@ const Header = () => {
     useEffect(() => {
         return () => {
             if (productDropdownTimeoutRef.current) {
-                clearTimeout(productDropdownTimeoutRef.current);
+                clearTimeout(productDropdownTimeoutRef.current); 300); // 300ms delay
             }
-          300); // 300ms delay
+          
         };
     }, []);
 
