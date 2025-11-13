@@ -64,9 +64,9 @@ const Header = () => {
     // Cleanup timeout on unmount
     useEffect(() => {
         return () => {
-            if (companyDropdownTimeoutRef.current) {
-                clearTimeout(companyDropdownTimeoutRef.current);
-            }300); // 300ms delay
+            if (productDropdownTimeoutRef.current) {
+                clearTimeout(productDropdownTimeoutRef.current);
+            }
         };
     }, []);
 
