@@ -81,7 +81,7 @@ const Header = () => {
             <div 
                 className="relative" 
                 onMouseEnter={() => { setProductDropdownOpen(true); setCompanyDropdownOpen(false); }}
-                onMouseLeave={() => setProductDropdownOpen(false)};
+                onMouseLeave={() => setProductDropdownOpen(false)}
               300); // 300ms delay
             >
                 <button 
