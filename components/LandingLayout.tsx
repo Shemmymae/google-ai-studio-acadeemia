@@ -77,10 +77,21 @@ const Header = () => {
             <img src={logoSrc} alt="Acadeemia Logo" className="h-10 w-auto" />
           </Link>
           <nav className="hidden lg:flex items-center space-x-8">
-            <div 
-                className="relative" 
-                onMouseEnter={() => { setProductDropdownOpen(true); setCompanyDropdownOpen(false); }}
-                onMouseLeave={() => setProductDropdownOpen(false)}
+            <div
+                className="relative"
+                onMouseEnter={() => {
+                    if (productDropdownTimeoutRef.current) {
+                        clearTimeout(productDropdownTimeoutRef.current);
+                        productDropdownTimeoutRef.current = null;
+                    }
+                    setProductDropdownOpen(true);
+                    setProductDropdownOpen(false);
+                }}
+                onMouseLeave={() => {
+                    productDropdownTimeoutRef.current = setTimeout(() => {
+                        setProductDropdownOpen(false);
+                    }, 300); // 300ms delay
+                }}
             >
                 <button 
                     className="flex items-center text-text-primary dark:text-gray-200 hover:text-primary transition-colors duration-300 font-medium"
