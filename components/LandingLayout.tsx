@@ -110,6 +110,7 @@ const Header = () => {
                     <div className="absolute top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 z-20">
                         <Link to="/modules" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Modules</Link>
                         <Link to="/versions" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Deployment</Link>
+                        <Link to="/msp" onClick={() => setProductDropdownOpen(false)} className="block px-4 py-2 text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">MSP</Link>
                     </div>
                 )}
             </div>
@@ -188,6 +189,7 @@ const Header = () => {
                         <div className="pl-4 pt-3 pb-2 space-y-3">
                              <Link to="/modules" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Modules</Link>
                              <Link to="/versions" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">Deployment</Link>
+                             <Link to="/msp" onClick={closeAllMenus} className="block text-text-primary dark:text-gray-200 hover:text-primary transition-colors py-1">MSP</Link>
                         </div>
                     )}
                 </div>

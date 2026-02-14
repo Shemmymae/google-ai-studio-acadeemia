@@ -109,6 +109,7 @@ import FrontendServicePage from './pages/frontend/ServicePage';
 import FrontendFaqPage from './pages/frontend/FaqPage';
 import FrontendGalleryCategoryPage from './pages/frontend/GalleryCategoryPage';
 import FrontendGalleryPage from './pages/frontend/GalleryPage';
+import MSPPage from './pages/MSPPage';
 
 // Reception Pages
 import AdmissionEnquiryPage from './pages/reception/AdmissionEnquiryPage';
@@ -488,6 +489,7 @@ function App() {
               <Route path="/affiliate-picks" element={<AffiliatePicksPage />} />
               <Route path="/help-center" element={<HelpCenterPage />} />
               <Route path="/faqs" element={<FAQsPage />} />
+              <Route path="/msp" element={<MSPPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
               <Route path="/subscription-success" element={<SubscriptionSuccessPage />} />
