@@ -305,7 +305,7 @@ const DemoPage = () => {
                                 <h3 className="text-2xl font-bold text-text-primary dark:text-white">Interactive Online Demo</h3>
                                 <p className="text-text-secondary dark:text-gray-400">Explore our system immediately with pre-populated sample data. Get hands-on experience with both deployment versions.</p>
                                 <div className="space-y-4">
-                                    <a href="https://saas.acadeemia.com/authentication/index" target="_blank" rel="noopener noreferrer" className="block p-4 border dark:border-gray-600 rounded-lg hover:border-primary dark:hover:border-primary transition-colors">
+                                    <a href="https://saas.acadeemia.com/saasdemo" target="_blank" rel="noopener noreferrer" className="block p-4 border dark:border-gray-600 rounded-lg hover:border-primary dark:hover:border-primary transition-colors">
                                         <p className="font-semibold text-primary">SaaS Demo</p>
                                         <p className="text-sm text-text-secondary dark:text-gray-400">Experience our cloud-based solution with sample data.</p>
                                         <span className="text-sm font-semibold text-primary mt-2 inline-block">Launch SaaS School Website Demo &rarr;</span>
