@@ -121,13 +121,13 @@ const MSPPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
-                to="/contact-us"
+                to="/contact"
                 className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300"
               >
                 Contact MSP Team
               </Link>
               <Link
-                to="/contactuspage"
+                to="/contact"
                 className="inline-block border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors duration-300"
               >
                 Request Consultation
