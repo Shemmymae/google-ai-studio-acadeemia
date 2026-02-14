@@ -127,7 +127,7 @@ const MSPPage = () => {
                 Contact MSP Team
               </Link>
               <Link
-                to="/demo"
+                to="/contactuspage"
                 className="inline-block border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors duration-300"
               >
                 Request Consultation
